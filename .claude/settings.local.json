@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena__list_dir",
+      "Bash(npm install:*)",
+      "Bash(timeout 10 npm start)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(npx tsc:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
