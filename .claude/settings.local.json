@@ -6,7 +6,8 @@
       "Bash(timeout 10 npm start)",
       "Bash(mkdir:*)",
       "Bash(touch:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(file:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,130 +1,129 @@
 /**
- * �������hSg(Y��p��
+ * アプリケーション全体の定数
  *
- * �����h������-�k�eO
+ * 各種設定値や選択肢の定義
  */
 
 import { TaskStatus, RepeatType } from '@/types';
 import { colors } from '@/theme';
 
 // ============================================
-// B;x�n�p
+// 時刻選択の定数
 // ============================================
 
 /**
- * >B;B	nx��
- * 5B^29B29B = ��5B	
+ * 時の選択肢配列
+ * 5時～29時（29時 = 翌日5時）
  */
 export const HOURS = Array.from({ length: 25 }, (_, i) => i + 5);
 
 /**
- * >B;	nx��
- * 0153045
+ * 分の選択肢配列
+ * 0, 15, 30, 45
  */
 export const MINUTES = [0, 15, 30, 45] as const;
 
 // ============================================
-// ��n�p
+// 曜日の定数
 // ============================================
 
 /**
- * ��nx��
- * value: 0=��1=�...6=�
+ * 曜日の選択肢配列
+ * value: 0=日曜日, 1=月曜日, ..., 6=土曜日
  */
 export const DAY_OF_WEEK_OPTIONS = [
-  { label: '���', value: 0 },
-  { label: '��', value: 1 },
-  { label: 'k��', value: 2 },
-  { label: '4��', value: 3 },
-  { label: '(��', value: 4 },
-  { label: '���', value: 5 },
-  { label: '��', value: 6 },
+  { label: '日曜日', value: 0 },
+  { label: '月曜日', value: 1 },
+  { label: '火曜日', value: 2 },
+  { label: '水曜日', value: 3 },
+  { label: '木曜日', value: 4 },
+  { label: '金曜日', value: 5 },
+  { label: '土曜日', value: 6 },
 ] as const;
 
 /**
- * ��n�.b�Bh:(	
+ * 曜日の短縮形配列（日本語1文字）
  */
-export const DAY_OF_WEEK_SHORT = ['�', '', 'k', '4', '(', '�', ''] as const;
+export const DAY_OF_WEEK_SHORT = ['日', '月', '火', '水', '木', '金', '土'] as const;
 
 // ============================================
-// p��W-�n�p
+// 繰り返し設定の定数
 // ============================================
 
 /**
- * p��W-�nx��
+ * 繰り返し設定の選択肢配列
  */
 export const REPEAT_TYPE_OPTIONS = [
-  { label: 'jWXz	', value: 'none' as RepeatType },
-  { label: '�1', value: 'weekly' as RepeatType },
+  { label: '繰り返しなし', value: 'none' as RepeatType },
+  { label: '毎週', value: 'weekly' as RepeatType },
 ] as const;
 
 // ============================================
-// �����n�p
+// ステータスの定数
 // ============================================
 
 /**
- * �����Thn-�
- * u�Wr��뒚�
+ * ステータスごとの設定
+ * 絵文字、色、ラベルを定義
  */
 export const STATUS_CONFIG = {
   unlistened: {
-    emoji: '=4',
+    emoji: '📻',
     color: colors.statusUnlistened,
-    label: '*t�',
+    label: '未聴取',
   },
   listening: {
-    emoji: '=�',
+    emoji: '🎧',
     color: colors.statusListening,
-    label: 't�-',
+    label: '聴取中',
   },
   completed: {
-    emoji: '',
+    emoji: '✅',
     color: colors.statusCompleted,
-    label: 't�',
+    label: '聴取済',
   },
 } as const satisfies Record<TaskStatus, { emoji: string; color: string; label: string }>;
 
 // ============================================
-// Ph:nrQ
+// 期限の色設定
 // ============================================
 
 /**
- * ���pk�X_rn֗�p
- * @param daysRemaining ���p
- * @returns r���
+ * 残り日数に応じた色を返す関数
+ * @param daysRemaining 残り日数
+ * @returns 色文字列
  */
 export const getDeadlineColor = (daysRemaining: number): string => {
   if (daysRemaining <= 1) {
-    return colors.deadlineUrgent; // d
+    return colors.deadlineUrgent; // 赤
   } else if (daysRemaining <= 3) {
-    return colors.deadlineWarning; // �
+    return colors.deadlineWarning; // 黄
   } else {
-    return colors.deadlineNormal; // ���
+    return colors.deadlineNormal; // グレー
   }
 };
 
 /**
- * PnrQ���ָ���b	
+ * 期限の色設定オブジェクト
  */
 export const DEADLINE_COLORS = {
-  urgent: colors.deadlineUrgent, // ��1��
-  warning: colors.deadlineWarning, // ��2-3�
-  normal: colors.deadlineNormal, // ��4��
-
+  urgent: colors.deadlineUrgent, // 残り1日以下
+  warning: colors.deadlineWarning, // 残り2-3日
+  normal: colors.deadlineNormal, // 残り4日以上
 } as const;
 
 // ============================================
-// ]n�n�p
+// radikoの仕様定数
 // ============================================
 
 /**
- * radikon������t�P
- * >�7� + 29B�8�n5:00~g	
+ * radikoのタイムフリー期限
+ * 放送日時 + 7日 + 29時間（8日後の5:00まで）
  */
 export const TIMEFREE_PERIOD_DAYS = 7;
 export const TIMEFREE_DEADLINE_HOUR = 5; // 5:00 AM
 
 /**
- * etn���p	
+ * 聴取履歴の保持期間（日）
  */
 export const HISTORY_RETENTION_DAYS = 30;
