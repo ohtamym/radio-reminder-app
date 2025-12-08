@@ -48,74 +48,65 @@ export class ProgramService {
    *   repeat_type: 'weekly'
    * });
    */
-  static createProgram(
+  static async createProgram(
     db: SQLite.SQLiteDatabase,
     data: ProgramFormData
   ): Promise<number> {
-    return new Promise((resolve, reject) => {
-      let createdProgramId: number | null = null;
+    try {
+      let createdProgramId: number | undefined;
 
-      db.transaction(
-        (tx) => {
-          // 1. 番組を作成
-          tx.executeSql(
-            `INSERT INTO programs (
-              station_name,
-              program_name,
-              day_of_week,
-              hour,
-              minute,
-              repeat_type
-            ) VALUES (?, ?, ?, ?, ?, ?)`,
-            [
-              data.station_name,
-              data.program_name,
-              data.day_of_week,
-              data.hour,
-              data.minute,
-              data.repeat_type,
-            ],
-            (_, result) => {
-              createdProgramId = result.insertId;
+      await db.withTransactionAsync(async () => {
+        // 1. 番組を作成
+        const result = await db.runAsync(
+          `INSERT INTO programs (
+            station_name,
+            program_name,
+            day_of_week,
+            hour,
+            minute,
+            repeat_type
+          ) VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            data.station_name,
+            data.program_name,
+            data.day_of_week,
+            data.hour,
+            data.minute,
+            data.repeat_type,
+          ]
+        );
 
-              // 2. 初回タスクを生成
-              const nextBroadcast = getNextBroadcastDatetime(
-                data.day_of_week,
-                data.hour,
-                data.minute
-              );
-              const deadline = calculateDeadline(nextBroadcast);
+        createdProgramId = result.lastInsertRowId;
 
-              tx.executeSql(
-                `INSERT INTO tasks (
-                  program_id,
-                  broadcast_datetime,
-                  deadline_datetime,
-                  status
-                ) VALUES (?, ?, ?, 'unlistened')`,
-                [createdProgramId, nextBroadcast, deadline]
-              );
-            }
-          );
-        },
-        (error) => {
-          console.error('[ProgramService] Create program failed:', error);
-          reject(
-            new AppError('番組の作成に失敗しました', 'CREATE_PROGRAM_FAILED')
-          );
-        },
-        () => {
-          if (createdProgramId !== null) {
-            console.log('[ProgramService] Program created:', createdProgramId);
-            resolve(createdProgramId);
-          } else {
-            reject(
-              new AppError('番組IDの取得に失敗しました', 'PROGRAM_ID_NOT_FOUND')
-            );
-          }
-        }
-      );
-    });
+        // 2. 初回タスクを生成
+        const nextBroadcast = getNextBroadcastDatetime(
+          data.day_of_week,
+          data.hour,
+          data.minute
+        );
+        const deadline = calculateDeadline(nextBroadcast);
+
+        await db.runAsync(
+          `INSERT INTO tasks (
+            program_id,
+            broadcast_datetime,
+            deadline_datetime,
+            status
+          ) VALUES (?, ?, ?, 'unlistened')`,
+          [createdProgramId, nextBroadcast, deadline]
+        );
+      });
+
+      if (createdProgramId === undefined) {
+        throw new AppError('番組IDの取得に失敗しました', 'PROGRAM_ID_NOT_FOUND');
+      }
+
+      console.log('[ProgramService] Program created:', createdProgramId);
+      return createdProgramId;
+    } catch (error) {
+      console.error('[ProgramService] Create program failed:', error);
+      throw new AppError('番組の作成に失敗しました', 'CREATE_PROGRAM_FAILED');
+    }
   }
 
   // ============================================
@@ -135,33 +126,21 @@ export class ProgramService {
    *   console.log(program.program_name);
    * }
    */
-  static getProgramById(
+  static async getProgramById(
     db: SQLite.SQLiteDatabase,
     id: number
   ): Promise<Program | null> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            'SELECT * FROM programs WHERE id = ?',
-            [id],
-            (_, result) => {
-              if (result.rows.length > 0) {
-                resolve(result.rows.item(0) as Program);
-              } else {
-                resolve(null);
-              }
-            }
-          );
-        },
-        (error) => {
-          console.error('[ProgramService] Get program failed:', error);
-          reject(
-            new AppError('番組の取得に失敗しました', 'GET_PROGRAM_FAILED')
-          );
-        }
+    try {
+      const result = await db.getFirstAsync<Program>(
+        'SELECT * FROM programs WHERE id = ?',
+        [id]
       );
-    });
+
+      return result || null;
+    } catch (error) {
+      console.error('[ProgramService] Get program failed:', error);
+      throw new AppError('番組の取得に失敗しました', 'GET_PROGRAM_FAILED');
+    }
   }
 
   // ============================================
@@ -190,48 +169,39 @@ export class ProgramService {
    *   repeat_type: 'weekly'
    * });
    */
-  static updateProgram(
+  static async updateProgram(
     db: SQLite.SQLiteDatabase,
     id: number,
     data: ProgramFormData
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            `UPDATE programs
-            SET
-              station_name = ?,
-              program_name = ?,
-              day_of_week = ?,
-              hour = ?,
-              minute = ?,
-              repeat_type = ?,
-              updated_at = datetime('now', 'localtime')
-            WHERE id = ?`,
-            [
-              data.station_name,
-              data.program_name,
-              data.day_of_week,
-              data.hour,
-              data.minute,
-              data.repeat_type,
-              id,
-            ]
-          );
-        },
-        (error) => {
-          console.error('[ProgramService] Update program failed:', error);
-          reject(
-            new AppError('番組の更新に失敗しました', 'UPDATE_PROGRAM_FAILED')
-          );
-        },
-        () => {
-          console.log('[ProgramService] Program updated:', id);
-          resolve();
-        }
+    try {
+      await db.runAsync(
+        `UPDATE programs
+        SET
+          station_name = ?,
+          program_name = ?,
+          day_of_week = ?,
+          hour = ?,
+          minute = ?,
+          repeat_type = ?,
+          updated_at = datetime('now', 'localtime')
+        WHERE id = ?`,
+        [
+          data.station_name,
+          data.program_name,
+          data.day_of_week,
+          data.hour,
+          data.minute,
+          data.repeat_type,
+          id,
+        ]
       );
-    });
+
+      console.log('[ProgramService] Program updated:', id);
+    } catch (error) {
+      console.error('[ProgramService] Update program failed:', error);
+      throw new AppError('番組の更新に失敗しました', 'UPDATE_PROGRAM_FAILED');
+    }
   }
 
   // ============================================
@@ -252,24 +222,15 @@ export class ProgramService {
    * @example
    * await ProgramService.deleteProgram(db, 1);
    */
-  static deleteProgram(db: SQLite.SQLiteDatabase, id: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql('DELETE FROM programs WHERE id = ?', [id]);
-        },
-        (error) => {
-          console.error('[ProgramService] Delete program failed:', error);
-          reject(
-            new AppError('番組の削除に失敗しました', 'DELETE_PROGRAM_FAILED')
-          );
-        },
-        () => {
-          console.log('[ProgramService] Program deleted:', id);
-          resolve();
-        }
-      );
-    });
+  static async deleteProgram(db: SQLite.SQLiteDatabase, id: number): Promise<void> {
+    try {
+      await db.runAsync('DELETE FROM programs WHERE id = ?', [id]);
+
+      console.log('[ProgramService] Program deleted:', id);
+    } catch (error) {
+      console.error('[ProgramService] Delete program failed:', error);
+      throw new AppError('番組の削除に失敗しました', 'DELETE_PROGRAM_FAILED');
+    }
   }
 
   // ============================================
@@ -292,58 +253,39 @@ export class ProgramService {
    * // createProgram内で自動的に呼ばれる
    * await ProgramService.generateFirstTask(db, programId, formData);
    */
-  static generateFirstTask(
+  static async generateFirstTask(
     db: SQLite.SQLiteDatabase,
     programId: number,
     data: ProgramFormData
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        // 次回放送日時を計算
-        const nextBroadcast = getNextBroadcastDatetime(
-          data.day_of_week,
-          data.hour,
-          data.minute
-        );
+    try {
+      // 次回放送日時を計算
+      const nextBroadcast = getNextBroadcastDatetime(
+        data.day_of_week,
+        data.hour,
+        data.minute
+      );
 
-        // 期限を計算（8日後の5:00）
-        const deadline = calculateDeadline(nextBroadcast);
+      // 期限を計算（8日後の5:00）
+      const deadline = calculateDeadline(nextBroadcast);
 
-        db.transaction(
-          (tx) => {
-            tx.executeSql(
-              `INSERT INTO tasks (
-                program_id,
-                broadcast_datetime,
-                deadline_datetime,
-                status
-              ) VALUES (?, ?, ?, 'unlistened')`,
-              [programId, nextBroadcast, deadline]
-            );
-          },
-          (error) => {
-            console.error('[ProgramService] Generate first task failed:', error);
-            reject(
-              new AppError(
-                'タスクの生成に失敗しました',
-                'GENERATE_TASK_FAILED'
-              )
-            );
-          },
-          () => {
-            console.log('[ProgramService] First task generated for:', programId);
-            resolve();
-          }
-        );
-      } catch (error) {
-        console.error('[ProgramService] Date calculation failed:', error);
-        reject(
-          new AppError(
-            '日時の計算に失敗しました',
-            'DATE_CALCULATION_FAILED'
-          )
-        );
-      }
-    });
+      await db.runAsync(
+        `INSERT INTO tasks (
+          program_id,
+          broadcast_datetime,
+          deadline_datetime,
+          status
+        ) VALUES (?, ?, ?, 'unlistened')`,
+        [programId, nextBroadcast, deadline]
+      );
+
+      console.log('[ProgramService] First task generated for:', programId);
+    } catch (error) {
+      console.error('[ProgramService] Generate first task failed:', error);
+      throw new AppError(
+        'タスクの生成に失敗しました',
+        'GENERATE_TASK_FAILED'
+      );
+    }
   }
 }

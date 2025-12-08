@@ -40,42 +40,29 @@ export class TaskService {
    *   console.log(task.program_name, task.deadline_datetime);
    * });
    */
-  static getActiveTasks(db: SQLite.SQLiteDatabase): Promise<TaskWithProgram[]> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            `SELECT
-              t.*,
-              p.station_name,
-              p.program_name,
-              p.repeat_type
-            FROM tasks t
-            INNER JOIN programs p ON t.program_id = p.id
-            WHERE t.status != 'completed'
-            AND t.deadline_datetime >= datetime('now', 'localtime')
-            ORDER BY t.deadline_datetime ASC`,
-            [],
-            (_, result) => {
-              const tasks: TaskWithProgram[] = [];
-              for (let i = 0; i < result.rows.length; i++) {
-                tasks.push(result.rows.item(i) as TaskWithProgram);
-              }
-              resolve(tasks);
-            }
-          );
-        },
-        (error) => {
-          console.error('[TaskService] Get active tasks failed:', error);
-          reject(
-            new AppError(
-              'アクティブタスクの取得に失敗しました',
-              'GET_ACTIVE_TASKS_FAILED'
-            )
-          );
-        }
+  static async getActiveTasks(db: SQLite.SQLiteDatabase): Promise<TaskWithProgram[]> {
+    try {
+      const tasks = await db.getAllAsync<TaskWithProgram>(
+        `SELECT
+          t.*,
+          p.station_name,
+          p.program_name,
+          p.repeat_type
+        FROM tasks t
+        INNER JOIN programs p ON t.program_id = p.id
+        WHERE t.status != 'completed'
+        AND t.deadline_datetime >= datetime('now', 'localtime')
+        ORDER BY t.deadline_datetime ASC`
       );
-    });
+
+      return tasks;
+    } catch (error) {
+      console.error('[TaskService] Get active tasks failed:', error);
+      throw new AppError(
+        'アクティブタスクの取得に失敗しました',
+        'GET_ACTIVE_TASKS_FAILED'
+      );
+    }
   }
 
   /**
@@ -91,40 +78,28 @@ export class TaskService {
    *   console.log(task.program_name);
    * }
    */
-  static getTaskById(
+  static async getTaskById(
     db: SQLite.SQLiteDatabase,
     id: number
   ): Promise<TaskWithProgram | null> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            `SELECT
-              t.*,
-              p.station_name,
-              p.program_name,
-              p.repeat_type
-            FROM tasks t
-            INNER JOIN programs p ON t.program_id = p.id
-            WHERE t.id = ?`,
-            [id],
-            (_, result) => {
-              if (result.rows.length > 0) {
-                resolve(result.rows.item(0) as TaskWithProgram);
-              } else {
-                resolve(null);
-              }
-            }
-          );
-        },
-        (error) => {
-          console.error('[TaskService] Get task by id failed:', error);
-          reject(
-            new AppError('タスクの取得に失敗しました', 'GET_TASK_FAILED')
-          );
-        }
+    try {
+      const task = await db.getFirstAsync<TaskWithProgram>(
+        `SELECT
+          t.*,
+          p.station_name,
+          p.program_name,
+          p.repeat_type
+        FROM tasks t
+        INNER JOIN programs p ON t.program_id = p.id
+        WHERE t.id = ?`,
+        [id]
       );
-    });
+
+      return task || null;
+    } catch (error) {
+      console.error('[TaskService] Get task by id failed:', error);
+      throw new AppError('タスクの取得に失敗しました', 'GET_TASK_FAILED');
+    }
   }
 
   // ============================================
@@ -146,53 +121,44 @@ export class TaskService {
    * @example
    * await TaskService.updateTaskStatus(db, 1, 'completed');
    */
-  static updateTaskStatus(
+  static async updateTaskStatus(
     db: SQLite.SQLiteDatabase,
     id: number,
     status: TaskStatus
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          if (status === 'completed') {
-            // completedの場合は completed_at を設定
-            tx.executeSql(
-              `UPDATE tasks
-              SET
-                status = ?,
-                completed_at = datetime('now', 'localtime'),
-                updated_at = datetime('now', 'localtime')
-              WHERE id = ?`,
-              [status, id]
-            );
-          } else {
-            // それ以外は completed_at をクリア
-            tx.executeSql(
-              `UPDATE tasks
-              SET
-                status = ?,
-                completed_at = NULL,
-                updated_at = datetime('now', 'localtime')
-              WHERE id = ?`,
-              [status, id]
-            );
-          }
-        },
-        (error) => {
-          console.error('[TaskService] Update task status failed:', error);
-          reject(
-            new AppError(
-              'タスクステータスの更新に失敗しました',
-              'UPDATE_TASK_STATUS_FAILED'
-            )
-          );
-        },
-        () => {
-          console.log('[TaskService] Task status updated:', id, status);
-          resolve();
-        }
+    try {
+      if (status === 'completed') {
+        // completedの場合は completed_at を設定
+        await db.runAsync(
+          `UPDATE tasks
+          SET
+            status = ?,
+            completed_at = datetime('now', 'localtime'),
+            updated_at = datetime('now', 'localtime')
+          WHERE id = ?`,
+          [status, id]
+        );
+      } else {
+        // それ以外は completed_at をクリア
+        await db.runAsync(
+          `UPDATE tasks
+          SET
+            status = ?,
+            completed_at = NULL,
+            updated_at = datetime('now', 'localtime')
+          WHERE id = ?`,
+          [status, id]
+        );
+      }
+
+      console.log('[TaskService] Task status updated:', id, status);
+    } catch (error) {
+      console.error('[TaskService] Update task status failed:', error);
+      throw new AppError(
+        'タスクステータスの更新に失敗しました',
+        'UPDATE_TASK_STATUS_FAILED'
       );
-    });
+    }
   }
 
   // ============================================
@@ -212,24 +178,15 @@ export class TaskService {
    * @example
    * await TaskService.deleteTask(db, 1);
    */
-  static deleteTask(db: SQLite.SQLiteDatabase, id: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql('DELETE FROM tasks WHERE id = ?', [id]);
-        },
-        (error) => {
-          console.error('[TaskService] Delete task failed:', error);
-          reject(
-            new AppError('タスクの削除に失敗しました', 'DELETE_TASK_FAILED')
-          );
-        },
-        () => {
-          console.log('[TaskService] Task deleted:', id);
-          resolve();
-        }
-      );
-    });
+  static async deleteTask(db: SQLite.SQLiteDatabase, id: number): Promise<void> {
+    try {
+      await db.runAsync('DELETE FROM tasks WHERE id = ?', [id]);
+
+      console.log('[TaskService] Task deleted:', id);
+    } catch (error) {
+      console.error('[TaskService] Delete task failed:', error);
+      throw new AppError('タスクの削除に失敗しました', 'DELETE_TASK_FAILED');
+    }
   }
 
   // ============================================
@@ -253,126 +210,71 @@ export class TaskService {
    * // アプリ起動時
    * await TaskService.cleanupExpiredTasks(db);
    */
-  static cleanupExpiredTasks(db: SQLite.SQLiteDatabase): Promise<void> {
-    return new Promise((resolve, reject) => {
+  static async cleanupExpiredTasks(db: SQLite.SQLiteDatabase): Promise<void> {
+    try {
       // まず期限切れタスクを取得
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            `SELECT t.*, p.repeat_type
-            FROM tasks t
-            INNER JOIN programs p ON t.program_id = p.id
-            WHERE t.status != 'completed'
-            AND t.deadline_datetime < datetime('now', 'localtime')`,
-            [],
-            (_, result) => {
-              const expiredTasks: Array<{
-                id: number;
-                program_id: number;
-                repeat_type: string;
-              }> = [];
-
-              for (let i = 0; i < result.rows.length; i++) {
-                expiredTasks.push(result.rows.item(i));
-              }
-
-              if (expiredTasks.length === 0) {
-                console.log('[TaskService] No expired tasks to cleanup');
-                resolve();
-                return;
-              }
-
-              console.log(
-                `[TaskService] Found ${expiredTasks.length} expired tasks`
-              );
-
-              // 期限切れタスクを削除し、必要に応じて次回タスクを生成
-              this.processExpiredTasks(db, expiredTasks)
-                .then(() => resolve())
-                .catch((error) => reject(error));
-            }
-          );
-        },
-        (error) => {
-          console.error('[TaskService] Cleanup expired tasks failed:', error);
-          reject(
-            new AppError(
-              '期限切れタスクのクリーンアップに失敗しました',
-              'CLEANUP_EXPIRED_TASKS_FAILED'
-            )
-          );
-        }
+      const expiredTasks = await db.getAllAsync<{
+        id: number;
+        program_id: number;
+        repeat_type: string;
+        day_of_week: number;
+        hour: number;
+        minute: number;
+      }>(
+        `SELECT t.id, t.program_id, p.repeat_type, p.day_of_week, p.hour, p.minute
+        FROM tasks t
+        INNER JOIN programs p ON t.program_id = p.id
+        WHERE t.status != 'completed'
+        AND t.deadline_datetime < datetime('now', 'localtime')`
       );
-    });
-  }
 
-  /**
-   * 期限切れタスクを処理（内部ヘルパー）
-   *
-   * @private
-   */
-  private static processExpiredTasks(
-    db: SQLite.SQLiteDatabase,
-    expiredTasks: Array<{ id: number; program_id: number; repeat_type: string }>
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          expiredTasks.forEach((task) => {
-            // タスクを削除
-            tx.executeSql('DELETE FROM tasks WHERE id = ?', [task.id]);
+      if (expiredTasks.length === 0) {
+        console.log('[TaskService] No expired tasks to cleanup');
+        return;
+      }
 
-            // 繰り返し設定がある場合は次回タスクを生成
-            if (task.repeat_type === 'weekly') {
-              // 番組情報を取得して次回タスクを生成
-              tx.executeSql(
-                'SELECT * FROM programs WHERE id = ?',
-                [task.program_id],
-                (_, result) => {
-                  if (result.rows.length > 0) {
-                    const program = result.rows.item(0);
+      console.log(`[TaskService] Found ${expiredTasks.length} expired tasks`);
 
-                    // 次回放送日時を計算
-                    const nextBroadcast = getNextBroadcastDatetime(
-                      program.day_of_week,
-                      program.hour,
-                      program.minute
-                    );
+      // 期限切れタスクを削除し、必要に応じて次回タスクを生成
+      await db.withTransactionAsync(async () => {
+        for (const task of expiredTasks) {
+          // タスクを削除
+          await db.runAsync('DELETE FROM tasks WHERE id = ?', [task.id]);
 
-                    // 期限を計算
-                    const deadline = calculateDeadline(nextBroadcast);
+          // 繰り返し設定がある場合は次回タスクを生成
+          if (task.repeat_type === 'weekly') {
+            // 次回放送日時を計算
+            const nextBroadcast = getNextBroadcastDatetime(
+              task.day_of_week,
+              task.hour,
+              task.minute
+            );
 
-                    // 次回タスクを作成
-                    tx.executeSql(
-                      `INSERT INTO tasks (
-                        program_id,
-                        broadcast_datetime,
-                        deadline_datetime,
-                        status
-                      ) VALUES (?, ?, ?, 'unlistened')`,
-                      [task.program_id, nextBroadcast, deadline]
-                    );
-                  }
-                }
-              );
-            }
-          });
-        },
-        (error) => {
-          console.error('[TaskService] Process expired tasks failed:', error);
-          reject(
-            new AppError(
-              '期限切れタスクの処理に失敗しました',
-              'PROCESS_EXPIRED_TASKS_FAILED'
-            )
-          );
-        },
-        () => {
-          console.log('[TaskService] Expired tasks processed successfully');
-          resolve();
+            // 期限を計算
+            const deadline = calculateDeadline(nextBroadcast);
+
+            // 次回タスクを作成
+            await db.runAsync(
+              `INSERT INTO tasks (
+                program_id,
+                broadcast_datetime,
+                deadline_datetime,
+                status
+              ) VALUES (?, ?, ?, 'unlistened')`,
+              [task.program_id, nextBroadcast, deadline]
+            );
+          }
         }
+      });
+
+      console.log('[TaskService] Expired tasks processed successfully');
+    } catch (error) {
+      console.error('[TaskService] Cleanup expired tasks failed:', error);
+      throw new AppError(
+        '期限切れタスクのクリーンアップに失敗しました',
+        'CLEANUP_EXPIRED_TASKS_FAILED'
       );
-    });
+    }
   }
 
   // ============================================
@@ -394,75 +296,52 @@ export class TaskService {
    * // タスク完了時に次回タスクを生成
    * await TaskService.generateNextTask(db, programId);
    */
-  static generateNextTask(
+  static async generateNextTask(
     db: SQLite.SQLiteDatabase,
     programId: number
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          // 番組情報を取得
-          tx.executeSql(
-            'SELECT * FROM programs WHERE id = ?',
-            [programId],
-            (_, result) => {
-              if (result.rows.length === 0) {
-                reject(
-                  new AppError('番組が見つかりません', 'PROGRAM_NOT_FOUND')
-                );
-                return;
-              }
+    try {
+      // 番組情報を取得
+      const program = await db.getFirstAsync<{
+        id: number;
+        day_of_week: number;
+        hour: number;
+        minute: number;
+      }>('SELECT * FROM programs WHERE id = ?', [programId]);
 
-              const program = result.rows.item(0);
+      if (!program) {
+        throw new AppError('番組が見つかりません', 'PROGRAM_NOT_FOUND');
+      }
 
-              try {
-                // 次回放送日時を計算
-                const nextBroadcast = getNextBroadcastDatetime(
-                  program.day_of_week,
-                  program.hour,
-                  program.minute
-                );
-
-                // 期限を計算
-                const deadline = calculateDeadline(nextBroadcast);
-
-                // タスクを作成
-                tx.executeSql(
-                  `INSERT INTO tasks (
-                    program_id,
-                    broadcast_datetime,
-                    deadline_datetime,
-                    status
-                  ) VALUES (?, ?, ?, 'unlistened')`,
-                  [programId, nextBroadcast, deadline]
-                );
-              } catch (error) {
-                console.error('[TaskService] Date calculation failed:', error);
-                reject(
-                  new AppError(
-                    '日時の計算に失敗しました',
-                    'DATE_CALCULATION_FAILED'
-                  )
-                );
-              }
-            }
-          );
-        },
-        (error) => {
-          console.error('[TaskService] Generate next task failed:', error);
-          reject(
-            new AppError(
-              '次回タスクの生成に失敗しました',
-              'GENERATE_NEXT_TASK_FAILED'
-            )
-          );
-        },
-        () => {
-          console.log('[TaskService] Next task generated for:', programId);
-          resolve();
-        }
+      // 次回放送日時を計算
+      const nextBroadcast = getNextBroadcastDatetime(
+        program.day_of_week,
+        program.hour,
+        program.minute
       );
-    });
+
+      // 期限を計算
+      const deadline = calculateDeadline(nextBroadcast);
+
+      // タスクを作成
+      await db.runAsync(
+        `INSERT INTO tasks (
+          program_id,
+          broadcast_datetime,
+          deadline_datetime,
+          status
+        ) VALUES (?, ?, ?, 'unlistened')`,
+        [programId, nextBroadcast, deadline]
+      );
+
+      console.log('[TaskService] Next task generated for:', programId);
+    } catch (error) {
+      console.error('[TaskService] Generate next task failed:', error);
+      throw new AppError(
+        '次回タスクの生成に失敗しました',
+        'GENERATE_NEXT_TASK_FAILED'
+      );
+    }
   }
 
   // ============================================
@@ -484,39 +363,26 @@ export class TaskService {
    *   console.log(task.program_name, task.completed_at);
    * });
    */
-  static getHistory(db: SQLite.SQLiteDatabase): Promise<TaskWithProgram[]> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            `SELECT
-              t.*,
-              p.station_name,
-              p.program_name,
-              p.repeat_type
-            FROM tasks t
-            INNER JOIN programs p ON t.program_id = p.id
-            WHERE t.status = 'completed'
-            AND t.completed_at >= datetime('now', 'localtime', '-1 month')
-            ORDER BY t.completed_at DESC`,
-            [],
-            (_, result) => {
-              const tasks: TaskWithProgram[] = [];
-              for (let i = 0; i < result.rows.length; i++) {
-                tasks.push(result.rows.item(i) as TaskWithProgram);
-              }
-              resolve(tasks);
-            }
-          );
-        },
-        (error) => {
-          console.error('[TaskService] Get history failed:', error);
-          reject(
-            new AppError('履歴の取得に失敗しました', 'GET_HISTORY_FAILED')
-          );
-        }
+  static async getHistory(db: SQLite.SQLiteDatabase): Promise<TaskWithProgram[]> {
+    try {
+      const history = await db.getAllAsync<TaskWithProgram>(
+        `SELECT
+          t.*,
+          p.station_name,
+          p.program_name,
+          p.repeat_type
+        FROM tasks t
+        INNER JOIN programs p ON t.program_id = p.id
+        WHERE t.status = 'completed'
+        AND t.completed_at >= datetime('now', 'localtime', '-1 month')
+        ORDER BY t.completed_at DESC`
       );
-    });
+
+      return history;
+    } catch (error) {
+      console.error('[TaskService] Get history failed:', error);
+      throw new AppError('履歴の取得に失敗しました', 'GET_HISTORY_FAILED');
+    }
   }
 
   /**
@@ -533,30 +399,21 @@ export class TaskService {
    * // アプリ起動時
    * await TaskService.cleanupOldHistory(db);
    */
-  static cleanupOldHistory(db: SQLite.SQLiteDatabase): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            `DELETE FROM tasks
-            WHERE status = 'completed'
-            AND completed_at < datetime('now', 'localtime', '-1 month')`
-          );
-        },
-        (error) => {
-          console.error('[TaskService] Cleanup old history failed:', error);
-          reject(
-            new AppError(
-              '古い履歴のクリーンアップに失敗しました',
-              'CLEANUP_OLD_HISTORY_FAILED'
-            )
-          );
-        },
-        () => {
-          console.log('[TaskService] Old history cleaned up successfully');
-          resolve();
-        }
+  static async cleanupOldHistory(db: SQLite.SQLiteDatabase): Promise<void> {
+    try {
+      await db.runAsync(
+        `DELETE FROM tasks
+        WHERE status = 'completed'
+        AND completed_at < datetime('now', 'localtime', '-1 month')`
       );
-    });
+
+      console.log('[TaskService] Old history cleaned up successfully');
+    } catch (error) {
+      console.error('[TaskService] Cleanup old history failed:', error);
+      throw new AppError(
+        '古い履歴のクリーンアップに失敗しました',
+        'CLEANUP_OLD_HISTORY_FAILED'
+      );
+    }
   }
 }

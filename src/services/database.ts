@@ -26,11 +26,11 @@ const CURRENT_SCHEMA_VERSION = 1;
 // ============================================
 
 /**
- * データベースを開く
+ * データベースを開く（非同期）
  * @returns SQLiteDatabase インスタンス
  */
-export const openDatabase = (): SQLite.SQLiteDatabase => {
-  return SQLite.openDatabase(DATABASE_NAME);
+export const openDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
+  return await SQLite.openDatabaseAsync(DATABASE_NAME);
 };
 
 // ============================================
@@ -152,58 +152,52 @@ const CREATE_TASKS_TRIGGER = `
  * @param db - SQLiteDatabaseインスタンス
  * @returns Promise<void>
  */
-export const initializeDatabase = (db: SQLite.SQLiteDatabase): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    db.transaction(
-      (tx) => {
-        // 1. programsテーブル作成
-        tx.executeSql(CREATE_PROGRAMS_TABLE);
+export const initializeDatabase = async (db: SQLite.SQLiteDatabase): Promise<void> => {
+  try {
+    await db.withTransactionAsync(async () => {
+      // 1. programsテーブル作成
+      await db.execAsync(CREATE_PROGRAMS_TABLE);
 
-        // 2. programsテーブルのインデックス作成
-        CREATE_PROGRAMS_INDEXES.forEach((sql) => {
-          tx.executeSql(sql);
-        });
-
-        // 3. tasksテーブル作成
-        tx.executeSql(CREATE_TASKS_TABLE);
-
-        // 4. tasksテーブルのインデックス作成
-        CREATE_TASKS_INDEXES.forEach((sql) => {
-          tx.executeSql(sql);
-        });
-
-        // 5. トリガー作成
-        tx.executeSql(CREATE_PROGRAMS_TRIGGER);
-        tx.executeSql(CREATE_TASKS_TRIGGER);
-
-        // 6. スキーマバージョンテーブル作成
-        tx.executeSql(CREATE_SCHEMA_VERSION_TABLE);
-
-        // 7. スキーマバージョンの確認と挿入
-        tx.executeSql(
-          'SELECT version FROM schema_version WHERE version = ?;',
-          [CURRENT_SCHEMA_VERSION],
-          (_, result) => {
-            if (result.rows.length === 0) {
-              // 現在のバージョンが未登録の場合は挿入
-              tx.executeSql(
-                'INSERT INTO schema_version (version) VALUES (?);',
-                [CURRENT_SCHEMA_VERSION]
-              );
-            }
-          }
-        );
-      },
-      (error) => {
-        console.error('Database initialization failed:', error);
-        reject(error);
-      },
-      () => {
-        console.log('Database initialized successfully');
-        resolve();
+      // 2. programsテーブルのインデックス作成
+      for (const sql of CREATE_PROGRAMS_INDEXES) {
+        await db.execAsync(sql);
       }
-    );
-  });
+
+      // 3. tasksテーブル作成
+      await db.execAsync(CREATE_TASKS_TABLE);
+
+      // 4. tasksテーブルのインデックス作成
+      for (const sql of CREATE_TASKS_INDEXES) {
+        await db.execAsync(sql);
+      }
+
+      // 5. トリガー作成
+      await db.execAsync(CREATE_PROGRAMS_TRIGGER);
+      await db.execAsync(CREATE_TASKS_TRIGGER);
+
+      // 6. スキーマバージョンテーブル作成
+      await db.execAsync(CREATE_SCHEMA_VERSION_TABLE);
+
+      // 7. スキーマバージョンの確認と挿入
+      const result = await db.getFirstAsync<{ version: number }>(
+        'SELECT version FROM schema_version WHERE version = ?;',
+        [CURRENT_SCHEMA_VERSION]
+      );
+
+      if (!result) {
+        // 現在のバージョンが未登録の場合は挿入
+        await db.runAsync(
+          'INSERT INTO schema_version (version) VALUES (?);',
+          [CURRENT_SCHEMA_VERSION]
+        );
+      }
+    });
+
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    throw error;
+  }
 };
 
 /**
@@ -212,22 +206,17 @@ export const initializeDatabase = (db: SQLite.SQLiteDatabase): Promise<void> => 
  * @param db - SQLiteDatabaseインスタンス
  * @returns Promise<void>
  */
-export const dropDatabase = (db: SQLite.SQLiteDatabase): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql('DROP TABLE IF EXISTS tasks;');
-        tx.executeSql('DROP TABLE IF EXISTS programs;');
-        tx.executeSql('DROP TABLE IF EXISTS schema_version;');
-      },
-      (error) => {
-        console.error('Database drop failed:', error);
-        reject(error);
-      },
-      () => {
-        console.log('Database dropped successfully');
-        resolve();
-      }
-    );
-  });
+export const dropDatabase = async (db: SQLite.SQLiteDatabase): Promise<void> => {
+  try {
+    await db.withTransactionAsync(async () => {
+      await db.execAsync('DROP TABLE IF EXISTS tasks;');
+      await db.execAsync('DROP TABLE IF EXISTS programs;');
+      await db.execAsync('DROP TABLE IF EXISTS schema_version;');
+    });
+
+    console.log('Database dropped successfully');
+  } catch (error) {
+    console.error('Database drop failed:', error);
+    throw error;
+  }
 };

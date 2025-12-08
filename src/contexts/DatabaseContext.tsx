@@ -79,8 +79,8 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
       try {
         console.log('[DatabaseContext] Initializing database...');
 
-        // データベースを開く
-        const database = openDatabase();
+        // データベースを開く（非同期）
+        const database = await openDatabase();
 
         // テーブル・インデックス・トリガーを作成
         await initializeDatabase(database);
