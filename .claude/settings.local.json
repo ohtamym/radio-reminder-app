@@ -11,7 +11,9 @@
       "mcp__serena__search_for_pattern",
       "Bash(cat:*)",
       "mcp__serena__get_symbols_overview",
-      "mcp__serena__find_symbol"
+      "mcp__serena__find_symbol",
+      "Bash(timeout 30 npx tsc:*)",
+      "Bash(node -e:*)"
     ],
     "deny": [],
     "ask": []
