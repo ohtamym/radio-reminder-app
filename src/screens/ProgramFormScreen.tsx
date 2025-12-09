@@ -64,7 +64,7 @@ export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
   const [program, setProgram] = useState<Program | null>(null);
   const [fetchLoading, setFetchLoading] = useState(false);
 
-  const programId = route?.params?.programId;
+  const programId = route.params?.programId;
   const isEditMode = programId !== undefined;
 
   // ============================================
@@ -85,12 +85,12 @@ export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
         } else {
           console.error('[ProgramFormScreen] Program not found:', programId);
           // プログラムが見つからない場合は前画面に戻る
-          navigation?.goBack();
+          navigation.goBack();
         }
       } catch (error) {
         console.error('[ProgramFormScreen] Failed to fetch program:', error);
         // エラーが発生した場合も前画面に戻る
-        navigation?.goBack();
+        navigation.goBack();
       } finally {
         setFetchLoading(false);
       }
@@ -124,7 +124,7 @@ export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
 
       if (success) {
         // 保存成功後は前画面に戻る
-        navigation?.goBack();
+        navigation.goBack();
       }
     },
     [isEditMode, programId, createProgram, updateProgram, navigation]
@@ -136,7 +136,7 @@ export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
    * 前画面に戻る
    */
   const handleCancel = useCallback(() => {
-    navigation?.goBack();
+    navigation.goBack();
   }, [navigation]);
 
   // ============================================

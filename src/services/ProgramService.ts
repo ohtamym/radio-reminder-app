@@ -6,6 +6,7 @@
  */
 
 import * as SQLite from 'expo-sqlite';
+import dayjs from 'dayjs';
 import { Program, ProgramFormData } from '@/types';
 import { getNextBroadcastDatetime, calculateDeadline } from '@/utils/dateUtils';
 import { AppError } from '@/utils/errorHandler';
@@ -79,12 +80,20 @@ export class ProgramService {
         createdProgramId = result.lastInsertRowId;
 
         // 2. 初回タスクを生成
-        const nextBroadcast = getNextBroadcastDatetime(
+        let broadcast = getNextBroadcastDatetime(
           data.day_of_week,
           data.hour,
           data.minute
         );
-        const deadline = calculateDeadline(nextBroadcast, data.hour);
+
+        // 繰り返し設定が「毎週」の場合は、前回（1週間前）の放送日時にする
+        // 理由: タスク作成時には、前回放送の聴取期限がまだ来ていないため
+        if (data.repeat_type === 'weekly') {
+          const broadcastDayjs = dayjs(broadcast);
+          broadcast = broadcastDayjs.subtract(7, 'day').format('YYYY-MM-DDTHH:mm:ss');
+        }
+
+        const deadline = calculateDeadline(broadcast, data.hour);
 
         await db.runAsync(
           `INSERT INTO tasks (
@@ -93,7 +102,7 @@ export class ProgramService {
             deadline_datetime,
             status
           ) VALUES (?, ?, ?, 'unlistened')`,
-          [createdProgramId, nextBroadcast, deadline]
+          [createdProgramId, broadcast, deadline]
         );
       });
 

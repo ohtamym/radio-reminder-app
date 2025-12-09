@@ -61,7 +61,7 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
   const [updating, setUpdating] = useState(false);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
-  const taskId = route?.params?.taskId;
+  const taskId = route.params.taskId;
 
   // ============================================
   // データ取得
@@ -83,12 +83,12 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
       } else {
         console.error('[TaskDetailScreen] Task not found:', taskId);
         // タスクが見つからない場合は前画面に戻る
-        navigation?.goBack();
+        navigation.goBack();
       }
     } catch (error) {
       console.error('[TaskDetailScreen] Failed to fetch task:', error);
       // エラーが発生した場合も前画面に戻る
-      navigation?.goBack();
+      navigation.goBack();
     } finally {
       setLoading(false);
     }
@@ -124,7 +124,7 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
 
         // completedステータスに変更した場合は一覧画面に戻る
         if (status === 'completed') {
-          navigation?.goBack();
+          navigation.goBack();
         }
       } catch (error) {
         console.error('[TaskDetailScreen] Failed to update status:', error);
@@ -145,7 +145,7 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
       return;
     }
 
-    navigation?.navigate('ProgramForm', { programId: task.program_id });
+    navigation.navigate('ProgramForm', { programId: task.program_id });
   }, [task, navigation]);
 
   /**
@@ -172,7 +172,7 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
       console.log('[TaskDetailScreen] Task deleted:', taskId);
 
       // 削除成功後は一覧画面に戻る
-      navigation?.goBack();
+      navigation.goBack();
     } catch (error) {
       console.error('[TaskDetailScreen] Failed to delete task:', error);
     } finally {
@@ -196,7 +196,7 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
         console.log('[TaskDetailScreen] Program deleted:', task.program_id);
 
         // 削除成功後は一覧画面に戻る
-        navigation?.goBack();
+        navigation.goBack();
       }
     } catch (error) {
       console.error('[TaskDetailScreen] Failed to delete program:', error);

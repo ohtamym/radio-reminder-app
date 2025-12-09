@@ -1611,10 +1611,10 @@ export const useProgram = () => {
     try {
       setLoading(true);
       const programId = await ProgramService.createProgram(data);
-      
-      // 最初のタスクを生成
+
+      // 初回タスクを生成（毎週の場合は前回放送分、単発の場合は次回放送分）
       await ProgramService.generateFirstTask(programId, data);
-      
+
       setError(null);
       return programId;
     } catch (err) {
@@ -1896,14 +1896,21 @@ export class ProgramService {
     programData: ProgramFormData
   ): Promise<void> {
     // 次回放送日時を計算
-    const nextBroadcast = getNextBroadcastDatetime(
+    let broadcast = getNextBroadcastDatetime(
       programData.dayOfWeek,
       programData.hour,
       programData.minute
     );
 
+    // 繰り返し設定が「毎週」の場合は、前回（1週間前）の放送日時にする
+    // 理由: タスク作成時には、前回放送の聴取期限がまだ来ていないため
+    if (programData.repeatType === 'weekly') {
+      const broadcastDayjs = dayjs(broadcast);
+      broadcast = broadcastDayjs.subtract(7, 'day').format('YYYY-MM-DDTHH:mm:ss');
+    }
+
     // 期限を計算
-    const deadline = calculateDeadline(nextBroadcast);
+    const deadline = calculateDeadline(broadcast);
 
     // タスクを作成
     await db.runAsync(`
@@ -1913,7 +1920,7 @@ export class ProgramService {
         deadline_datetime,
         status
       ) VALUES (?, ?, ?, 'unlistened')
-    `, [programId, nextBroadcast, deadline]);
+    `, [programId, broadcast, deadline]);
   }
 }
 ```

@@ -14,6 +14,7 @@
 import React, { useCallback } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { TaskCard } from '@/components/organisms';
 import { EmptyState, LoadingSpinner } from '@/components/molecules';
 import { Button } from '@/components/atoms';
@@ -54,6 +55,22 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
   const { tasks, loading, refreshing, updateStatus, refresh } = useTasks();
 
   // ============================================
+  // 画面フォーカス時の処理
+  // ============================================
+
+  /**
+   * 画面がフォーカスされたときにデータを再取得
+   *
+   * 番組登録後やタスク詳細画面からの戻り時に
+   * 最新のデータを表示するため
+   */
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
+
+  // ============================================
   // イベントハンドラ（useCallbackでメモ化）
   // ============================================
 
@@ -77,7 +94,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
    */
   const handleTaskPress = useCallback(
     (taskId: number) => {
-      navigation?.navigate('TaskDetail', { taskId });
+      navigation.navigate('TaskDetail', { taskId });
     },
     [navigation]
   );
@@ -88,7 +105,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
    * 番組登録画面へ遷移
    */
   const handleAddPress = useCallback(() => {
-    navigation?.navigate('ProgramForm');
+    navigation.navigate('ProgramForm');
   }, [navigation]);
 
   /**
@@ -97,7 +114,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
    * 履歴画面へ遷移
    */
   const handleHistoryPress = useCallback(() => {
-    navigation?.navigate('History');
+    navigation.navigate('History');
   }, [navigation]);
 
   /**
