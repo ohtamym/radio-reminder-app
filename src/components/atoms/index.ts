@@ -1,7 +1,7 @@
 /**
- * Atoms ������� ������
+ * Atoms コンポーネント
  *
- * �,�jUI�������Atomic Design - Atoms	
+ * 最小単位のUIコンポーネント（Atomic Design - Atoms）
  */
 
 export { default as Button } from './Button';

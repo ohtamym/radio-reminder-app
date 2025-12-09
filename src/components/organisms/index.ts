@@ -1,7 +1,7 @@
 /**
- * Organisms ³óİüÍóÈ ¨¯¹İüÈ
+ * Organisms ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
  *
- * ÑjUI³óİüÍóÈAtomic Design - Organisms	
+ * è¤‡é›‘ãªUIã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆï¼ˆAtomic Design - Organismsï¼‰
  */
 
 export { default as TaskCard } from './TaskCard';

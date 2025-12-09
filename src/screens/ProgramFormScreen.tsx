@@ -12,6 +12,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ProgramForm } from '@/components/organisms';
 import { LoadingSpinner } from '@/components/molecules';
 import { useProgram } from '@/hooks/useProgram';
@@ -19,25 +20,18 @@ import { useDatabase } from '@/contexts/DatabaseContext';
 import { ProgramService } from '@/services/ProgramService';
 import { Program, ProgramFormData } from '@/types';
 import { theme } from '@/theme';
+import { RootStackParamList } from '@/navigation/types';
 
 // ============================================
 // 型定義
 // ============================================
 
 /**
- * ProgramFormScreenのナビゲーションプロパティ
+ * ProgramFormScreenのプロパティ型
  *
- * 注: ナビゲーション設定が完了したら、適切な型に置き換える
+ * React Navigationのスタック画面プロパティを使用
  */
-interface ProgramFormScreenProps {
-  navigation?: any;
-  route?: {
-    params?: {
-      /** 番組ID（編集モードの場合に指定） */
-      programId?: number;
-    };
-  };
-}
+type ProgramFormScreenProps = NativeStackScreenProps<RootStackParamList, 'ProgramForm'>;
 
 // ============================================
 // コンポーネント

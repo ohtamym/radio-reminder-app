@@ -251,7 +251,7 @@ export class TaskService {
             );
 
             // 期限を計算
-            const deadline = calculateDeadline(nextBroadcast);
+            const deadline = calculateDeadline(nextBroadcast, task.hour);
 
             // 次回タスクを作成
             await db.runAsync(
@@ -321,7 +321,7 @@ export class TaskService {
       );
 
       // 期限を計算
-      const deadline = calculateDeadline(nextBroadcast);
+      const deadline = calculateDeadline(nextBroadcast, program.hour);
 
       // タスクを作成
       await db.runAsync(

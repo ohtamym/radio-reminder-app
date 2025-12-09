@@ -11,25 +11,25 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HistoryCard } from '@/components/organisms';
 import { EmptyState, LoadingSpinner } from '@/components/molecules';
 import { TaskService } from '@/services/TaskService';
 import { useDatabase } from '@/contexts/DatabaseContext';
 import { TaskWithProgram } from '@/types';
 import { theme } from '@/theme';
+import { RootStackParamList } from '@/navigation/types';
 
 // ============================================
 // 型定義
 // ============================================
 
 /**
- * HistoryScreenのナビゲーションプロパティ
+ * HistoryScreenのプロパティ型
  *
- * 注: ナビゲーション設定が完了したら、適切な型に置き換える
+ * React Navigationのスタック画面プロパティを使用
  */
-interface HistoryScreenProps {
-  navigation?: any;
-}
+type HistoryScreenProps = NativeStackScreenProps<RootStackParamList, 'History'>;
 
 // ============================================
 // コンポーネント

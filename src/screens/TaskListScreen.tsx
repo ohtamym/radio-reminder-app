@@ -13,25 +13,25 @@
 
 import React, { useCallback } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TaskCard } from '@/components/organisms';
 import { EmptyState, LoadingSpinner } from '@/components/molecules';
 import { Button } from '@/components/atoms';
 import { useTasks } from '@/hooks/useTasks';
 import { TaskWithProgram, TaskStatus } from '@/types';
 import { theme } from '@/theme';
+import { RootStackParamList } from '@/navigation/types';
 
 // ============================================
 // 型定義
 // ============================================
 
 /**
- * TaskListScreenのナビゲーションプロパティ
+ * TaskListScreenのプロパティ型
  *
- * 注: ナビゲーション設定が完了したら、適切な型に置き換える
+ * React Navigationのスタック画面プロパティを使用
  */
-interface TaskListScreenProps {
-  navigation?: any;
-}
+type TaskListScreenProps = NativeStackScreenProps<RootStackParamList, 'TaskList'>;
 
 // ============================================
 // コンポーネント

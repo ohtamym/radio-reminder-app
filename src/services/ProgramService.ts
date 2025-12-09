@@ -84,7 +84,7 @@ export class ProgramService {
           data.hour,
           data.minute
         );
-        const deadline = calculateDeadline(nextBroadcast);
+        const deadline = calculateDeadline(nextBroadcast, data.hour);
 
         await db.runAsync(
           `INSERT INTO tasks (
@@ -267,7 +267,7 @@ export class ProgramService {
       );
 
       // 期限を計算（8日後の5:00）
-      const deadline = calculateDeadline(nextBroadcast);
+      const deadline = calculateDeadline(nextBroadcast, data.hour);
 
       await db.runAsync(
         `INSERT INTO tasks (

@@ -10,6 +10,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TaskDetailView, DeleteConfirmDialog } from '@/components/organisms';
 import { RadioButtonGroup, LoadingSpinner } from '@/components/molecules';
 import { Button } from '@/components/atoms';
@@ -19,25 +20,18 @@ import { useProgram } from '@/hooks/useProgram';
 import { TaskWithProgram, TaskStatus } from '@/types';
 import { STATUS_CONFIG } from '@/constants';
 import { theme } from '@/theme';
+import { RootStackParamList } from '@/navigation/types';
 
 // ============================================
 // 型定義
 // ============================================
 
 /**
- * TaskDetailScreenのナビゲーションプロパティ
+ * TaskDetailScreenのプロパティ型
  *
- * 注: ナビゲーション設定が完了したら、適切な型に置き換える
+ * React Navigationのスタック画面プロパティを使用
  */
-interface TaskDetailScreenProps {
-  navigation?: any;
-  route?: {
-    params?: {
-      /** タスクID */
-      taskId: number;
-    };
-  };
-}
+type TaskDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'TaskDetail'>;
 
 // ============================================
 // コンポーネント

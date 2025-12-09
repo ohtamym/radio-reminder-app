@@ -139,17 +139,30 @@ export const getNextBroadcastDatetime = (
  *
  * radikoのタイムフリー聴取期限を計算
  * 放送日時の7日後 + 29時間 = 8日後の5:00
+ * 24時以降の番組は、番組表上の日付（前日）を基準とする
  *
  * @param broadcastDatetime - ISO8601形式の放送日時文字列
+ * @param originalHour - 元の放送時（5-29）。24時以降かの判定に使用
  * @returns ISO8601形式の期限日時文字列
  *
  * @example
- * calculateDeadline('2024-12-05T18:00:00')
+ * calculateDeadline('2024-12-05T18:00:00', 18)
  * // => '2024-12-13T05:00:00' (8日後の5:00)
+ *
+ * @example
+ * // 火曜24時（= 水曜0時）の番組の場合
+ * calculateDeadline('2024-12-04T00:00:00', 24)
+ * // => '2024-12-11T05:00:00' (火曜基準で8日後の5:00 = 次週水曜5時)
  */
-export const calculateDeadline = (broadcastDatetime: string): string => {
-  return dayjs(broadcastDatetime)
-    .add(8, 'day')
+export const calculateDeadline = (broadcastDatetime: string, originalHour: number): string => {
+  let deadline = dayjs(broadcastDatetime).add(8, 'day');
+
+  // 24時以降の番組の場合、番組表上の日付（前日）を基準にするため1日引く
+  if (originalHour >= 24) {
+    deadline = deadline.subtract(1, 'day');
+  }
+
+  return deadline
     .hour(5)
     .minute(0)
     .second(0)
