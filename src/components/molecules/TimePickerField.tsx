@@ -6,11 +6,11 @@
  * 分: 0, 15, 30, 45
  */
 
-import React, { memo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { HOURS, MINUTES } from '@/constants';
-import { colors, spacing, typography, borderRadius } from '@/theme';
+import React, { memo } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { HOURS, MINUTES } from "@/constants";
+import { colors, spacing, typography, borderRadius } from "@/theme";
 
 // ============================================
 // 型定義
@@ -61,7 +61,7 @@ export interface TimePickerFieldProps {
  * />
  */
 export const TimePickerField: React.FC<TimePickerFieldProps> = memo(
-  ({ hour, minute, onHourChange, onMinuteChange, label = '放送時刻 *' }) => {
+  ({ hour, minute, onHourChange, onMinuteChange, label = "放送時刻 *" }) => {
     return (
       <View style={styles.container}>
         {label && <Text style={styles.label}>{label}</Text>}
@@ -89,7 +89,7 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = memo(
               {MINUTES.map((m) => (
                 <Picker.Item
                   key={m}
-                  label={m.toString().padStart(2, '0')}
+                  label={m.toString().padStart(2, "0")}
                   value={m}
                 />
               ))}
@@ -101,7 +101,7 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = memo(
   }
 );
 
-TimePickerField.displayName = 'TimePickerField';
+TimePickerField.displayName = "TimePickerField";
 
 // ============================================
 // スタイル
@@ -113,13 +113,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: typography.fontSize.body,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.sm,
   },
   pickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.small,
     paddingHorizontal: spacing.md,
@@ -128,11 +128,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   picker: {
+    color: colors.text,
     height: 50,
   },
   separator: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginHorizontal: spacing.sm,
   },

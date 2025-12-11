@@ -23,7 +23,8 @@
       "permissions": [
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS"
-      ]
+      ],
+      "package": "com.ohtamym.radioreminderapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +37,11 @@
           "mode": "production"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0f83b20a-a14f-4c74-a928-adf1d7b69735"
+      }
+    }
   }
 }
