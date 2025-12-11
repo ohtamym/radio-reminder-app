@@ -9,6 +9,7 @@ import * as SQLite from 'expo-sqlite';
 import { Task, TaskWithProgram, TaskStatus } from '@/types';
 import { getNextBroadcastDatetime, calculateDeadline } from '@/utils/dateUtils';
 import { AppError } from '@/utils/errorHandler';
+import { NotificationService } from './NotificationService';
 
 // ============================================
 // TaskService クラス
@@ -138,6 +139,9 @@ export class TaskService {
           WHERE id = ?`,
           [status, id]
         );
+
+        // 通知をキャンセル（完了したタスクは通知不要）
+        await NotificationService.cancelNotification(id);
       } else {
         // それ以外は completed_at をクリア
         await db.runAsync(
@@ -180,9 +184,13 @@ export class TaskService {
    */
   static async deleteTask(db: SQLite.SQLiteDatabase, id: number): Promise<void> {
     try {
+      // タスクを削除
       await db.runAsync('DELETE FROM tasks WHERE id = ?', [id]);
 
       console.log('[TaskService] Task deleted:', id);
+
+      // 通知をキャンセル
+      await NotificationService.cancelNotification(id);
     } catch (error) {
       console.error('[TaskService] Delete task failed:', error);
       throw new AppError('タスクの削除に失敗しました', 'DELETE_TASK_FAILED');
@@ -216,12 +224,14 @@ export class TaskService {
       const expiredTasks = await db.getAllAsync<{
         id: number;
         program_id: number;
+        station_name: string;
+        program_name: string;
         repeat_type: string;
         day_of_week: number;
         hour: number;
         minute: number;
       }>(
-        `SELECT t.id, t.program_id, p.repeat_type, p.day_of_week, p.hour, p.minute
+        `SELECT t.id, t.program_id, p.station_name, p.program_name, p.repeat_type, p.day_of_week, p.hour, p.minute
         FROM tasks t
         INNER JOIN programs p ON t.program_id = p.id
         WHERE t.status != 'completed'
@@ -241,6 +251,9 @@ export class TaskService {
           // タスクを削除
           await db.runAsync('DELETE FROM tasks WHERE id = ?', [task.id]);
 
+          // 通知をキャンセル
+          await NotificationService.cancelNotification(task.id);
+
           // 繰り返し設定がある場合は次回タスクを生成
           if (task.repeat_type === 'weekly') {
             // 次回放送日時を計算
@@ -254,7 +267,7 @@ export class TaskService {
             const deadline = calculateDeadline(nextBroadcast, task.hour);
 
             // 次回タスクを作成
-            await db.runAsync(
+            const result = await db.runAsync(
               `INSERT INTO tasks (
                 program_id,
                 broadcast_datetime,
@@ -263,6 +276,16 @@ export class TaskService {
               ) VALUES (?, ?, ?, 'unlistened')`,
               [task.program_id, nextBroadcast, deadline]
             );
+
+            // 通知をスケジュール
+            if (result.lastInsertRowId) {
+              await NotificationService.scheduleReminder(
+                result.lastInsertRowId,
+                task.program_name,
+                task.station_name,
+                deadline
+              );
+            }
           }
         }
       });
@@ -304,6 +327,8 @@ export class TaskService {
       // 番組情報を取得
       const program = await db.getFirstAsync<{
         id: number;
+        station_name: string;
+        program_name: string;
         day_of_week: number;
         hour: number;
         minute: number;
@@ -324,7 +349,7 @@ export class TaskService {
       const deadline = calculateDeadline(nextBroadcast, program.hour);
 
       // タスクを作成
-      await db.runAsync(
+      const result = await db.runAsync(
         `INSERT INTO tasks (
           program_id,
           broadcast_datetime,
@@ -335,6 +360,16 @@ export class TaskService {
       );
 
       console.log('[TaskService] Next task generated for:', programId);
+
+      // 通知をスケジュール
+      if (result.lastInsertRowId) {
+        await NotificationService.scheduleReminder(
+          result.lastInsertRowId,
+          program.program_name,
+          program.station_name,
+          deadline
+        );
+      }
     } catch (error) {
       console.error('[TaskService] Generate next task failed:', error);
       throw new AppError(

@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { Program, ProgramFormData } from '@/types';
 import { getNextBroadcastDatetime, calculateDeadline } from '@/utils/dateUtils';
 import { AppError } from '@/utils/errorHandler';
+import { NotificationService } from './NotificationService';
 
 // ============================================
 // ProgramService クラス
@@ -90,7 +91,7 @@ export class ProgramService {
         // 理由: タスク作成時には、前回放送の聴取期限がまだ来ていないため
         if (data.repeat_type === 'weekly') {
           const broadcastDayjs = dayjs(broadcast);
-          broadcast = broadcastDayjs.subtract(7, 'day').format('YYYY-MM-DDTHH:mm:ss');
+          broadcast = broadcastDayjs.subtract(7, 'day').format('YYYY-MM-DD HH:mm:ss');
         }
 
         const deadline = calculateDeadline(broadcast, data.hour);
@@ -278,7 +279,7 @@ export class ProgramService {
       // 期限を計算（8日後の5:00）
       const deadline = calculateDeadline(nextBroadcast, data.hour);
 
-      await db.runAsync(
+      const result = await db.runAsync(
         `INSERT INTO tasks (
           program_id,
           broadcast_datetime,
@@ -289,6 +290,16 @@ export class ProgramService {
       );
 
       console.log('[ProgramService] First task generated for:', programId);
+
+      // 通知をスケジュール
+      if (result.lastInsertRowId) {
+        await NotificationService.scheduleReminder(
+          result.lastInsertRowId,
+          data.program_name,
+          data.station_name,
+          deadline
+        );
+      }
     } catch (error) {
       console.error('[ProgramService] Generate first task failed:', error);
       throw new AppError(

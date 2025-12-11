@@ -4,7 +4,7 @@
  * radikoのタイムフリー機能に対応した日時処理
  * - 29時台の処理（深夜放送対応）
  * - Asia/Tokyoタイムゾーン
- * - ISO8601形式での日時管理
+ * - SQLite標準形式（YYYY-MM-DD HH:mm:ss）での日時管理
  */
 
 import dayjs from 'dayjs';
@@ -26,12 +26,12 @@ dayjs.tz.setDefault('Asia/Tokyo');
 /**
  * 日時をフォーマットして返す
  *
- * @param date - ISO8601形式の日時文字列
+ * @param date - SQLite標準形式の日時文字列（YYYY-MM-DD HH:mm:ss）
  * @param format - フォーマット文字列（dayjs形式）
  * @returns フォーマットされた日時文字列
  *
  * @example
- * formatDate('2024-12-05T18:00:00', 'M/D(ddd) HH:mm')
+ * formatDate('2024-12-05 18:00:00', 'M/D(ddd) HH:mm')
  * // => '12/5(木) 18:00'
  */
 export const formatDate = (date: string, format: string): string => {
@@ -45,12 +45,12 @@ export const formatDate = (date: string, format: string): string => {
 /**
  * 期限までの残り日数を計算
  *
- * @param deadline - ISO8601形式の期限日時文字列
+ * @param deadline - SQLite標準形式の期限日時文字列（YYYY-MM-DD HH:mm:ss）
  * @returns 残り日数（小数点切り上げ）
  *
  * @example
- * calculateRemainingDays('2024-12-12T05:00:00')
- * // 現在が2024-12-10T10:00:00の場合 => 2
+ * calculateRemainingDays('2024-12-12 05:00:00')
+ * // 現在が2024-12-10 10:00:00の場合 => 2
  */
 export const calculateRemainingDays = (deadline: string): number => {
   const now = dayjs();
@@ -131,7 +131,7 @@ export const getNextBroadcastDatetime = (
     next = next.add(7, 'day');
   }
 
-  return next.format('YYYY-MM-DDTHH:mm:ss');
+  return next.format('YYYY-MM-DD HH:mm:ss');
 };
 
 /**
@@ -167,5 +167,5 @@ export const calculateDeadline = (broadcastDatetime: string, originalHour: numbe
     .minute(0)
     .second(0)
     .millisecond(0)
-    .format('YYYY-MM-DDTHH:mm:ss');
+    .format('YYYY-MM-DD HH:mm:ss');
 };

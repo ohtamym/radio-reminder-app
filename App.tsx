@@ -6,9 +6,10 @@
  * - DatabaseProvider: データベース接続
  * - NavigationContainer: React Navigation
  * - AppNavigator: 画面遷移
+ * - NotificationService: 通知機能の初期化
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // react-native-screensを明示的にインポート（Androidでの型エラー対策）
@@ -17,6 +18,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DatabaseProvider } from "@/contexts/DatabaseContext";
 import { AppNavigator } from "@/navigation";
+import { NotificationService } from "@/services/NotificationService";
 
 /**
  * アプリケーションルートコンポーネント
@@ -28,6 +30,15 @@ import { AppNavigator } from "@/navigation";
  * 4. AppNavigator - 画面スタックナビゲーター
  */
 const App: React.FC = () => {
+  // 通知機能の初期化
+  useEffect(() => {
+    // 通知ハンドラーの設定
+    NotificationService.configure();
+
+    // 通知パーミッションの要求
+    NotificationService.requestPermissions();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
