@@ -11,6 +11,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { TaskDetailView, DeleteConfirmDialog } from '@/components/organisms';
 import { RadioButtonGroup, LoadingSpinner } from '@/components/molecules';
 import { Button } from '@/components/atoms';
@@ -94,9 +95,16 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
     }
   }, [db, taskId, navigation]);
 
-  useEffect(() => {
-    fetchTask();
-  }, [fetchTask]);
+  /**
+   * 画面がフォーカスされたときにデータを再取得
+   *
+   * 番組編集後に戻ってきた際に最新のデータを表示するため
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchTask();
+    }, [fetchTask])
+  );
 
   // ============================================
   // イベントハンドラ

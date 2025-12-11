@@ -11,8 +11,8 @@
  * - パフォーマンス最適化
  */
 
-import React, { useCallback } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import React, { useCallback, useState, useEffect } from 'react';
+import { View, FlatList, StyleSheet, Modal, ScrollView, Text } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskCard } from '@/components/organisms';
@@ -22,6 +22,8 @@ import { useTasks } from '@/hooks/useTasks';
 import { TaskWithProgram, TaskStatus } from '@/types';
 import { theme } from '@/theme';
 import { RootStackParamList } from '@/navigation/types';
+import { NotificationService } from '@/services/NotificationService';
+import * as Notifications from 'expo-notifications';
 
 // ============================================
 // 型定義
@@ -53,6 +55,25 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
   // ============================================
 
   const { tasks, loading, refreshing, updateStatus, refresh } = useTasks();
+
+  // デバッグ用: スケジュール済み通知の表示
+  const [showDebugModal, setShowDebugModal] = useState(false);
+  const [scheduledNotifications, setScheduledNotifications] = useState<
+    Notifications.NotificationRequest[]
+  >([]);
+
+  // 初回マウント時にスケジュール済み通知を取得
+  useEffect(() => {
+    const fetchScheduledNotifications = async () => {
+      const notifications = await NotificationService.getScheduledNotifications();
+      setScheduledNotifications(notifications);
+      if (notifications.length > 0) {
+        setShowDebugModal(true);
+      }
+    };
+
+    fetchScheduledNotifications();
+  }, []);
 
   // ============================================
   // 画面フォーカス時の処理
@@ -116,6 +137,13 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
   const handleHistoryPress = useCallback(() => {
     navigation.navigate('History');
   }, [navigation]);
+
+  /**
+   * デバッグモーダルを閉じる
+   */
+  const handleCloseDebugModal = useCallback(() => {
+    setShowDebugModal(false);
+  }, []);
 
   /**
    * keyExtractor（メモ化）
@@ -183,6 +211,93 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
           履歴を見る
         </Button>
       </View>
+
+      {/* デバッグ用: スケジュール済み通知モーダル */}
+      <Modal
+        visible={showDebugModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleCloseDebugModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              スケジュール済み通知 ({scheduledNotifications.length}件)
+            </Text>
+
+            <ScrollView style={styles.modalScrollView}>
+              {scheduledNotifications.length === 0 ? (
+                <Text style={styles.modalText}>
+                  スケジュール済み通知はありません
+                </Text>
+              ) : (
+                scheduledNotifications.map((notification, index) => (
+                  <View key={notification.identifier} style={styles.notificationItem}>
+                    <Text style={styles.notificationIndex}>#{index + 1}</Text>
+                    <Text style={styles.notificationId}>
+                      ID: {notification.identifier}
+                    </Text>
+                    <Text style={styles.notificationTitle}>
+                      {notification.content.title}
+                    </Text>
+                    <Text style={styles.notificationBody}>
+                      {notification.content.body}
+                    </Text>
+                    {notification.trigger ? (
+                      <View>
+                        <Text style={styles.notificationDate}>
+                          Trigger型: {(notification.trigger as any).type || '不明'}
+                        </Text>
+                        {(() => {
+                          const trigger = notification.trigger as any;
+                          if (trigger.date) {
+                            return (
+                              <Text style={styles.notificationDate}>
+                                日時: {new Date(trigger.date).toLocaleString('ja-JP')}
+                              </Text>
+                            );
+                          }
+                          if (trigger.value !== undefined && trigger.value !== null) {
+                            return (
+                              <Text style={styles.notificationDate}>
+                                日時: {new Date(trigger.value).toLocaleString('ja-JP', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  second: '2-digit'
+                                })}
+                              </Text>
+                            );
+                          }
+                          return (
+                            <Text style={styles.notificationDate}>
+                              日時情報が見つかりません
+                            </Text>
+                          );
+                        })()}
+                        {/* デバッグ: trigger構造を表示 */}
+                        <Text style={styles.debugText}>
+                          Debug: {JSON.stringify(notification.trigger, null, 2)}
+                        </Text>
+                      </View>
+                    ) : (
+                      <Text style={styles.notificationDate}>
+                        Trigger情報なし
+                      </Text>
+                    )}
+                  </View>
+                ))
+              )}
+            </ScrollView>
+
+            <Button variant="primary" onPress={handleCloseDebugModal} fullWidth>
+              閉じる
+            </Button>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -207,6 +322,76 @@ const styles = StyleSheet.create({
     padding: theme.spacing.lg,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
+  },
+  // デバッグモーダルのスタイル
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing.lg,
+  },
+  modalContent: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 12,
+    padding: theme.spacing.lg,
+    width: '100%',
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: theme.spacing.md,
+    color: theme.colors.text,
+  },
+  modalScrollView: {
+    maxHeight: 400,
+    marginBottom: theme.spacing.md,
+  },
+  modalText: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+  },
+  notificationItem: {
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: 8,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  notificationIndex: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: theme.colors.primary,
+    marginBottom: theme.spacing.xs,
+  },
+  notificationId: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.xs,
+  },
+  notificationTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs,
+  },
+  notificationBody: {
+    fontSize: 13,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs,
+  },
+  notificationDate: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
+    fontStyle: 'italic',
+  },
+  debugText: {
+    fontSize: 10,
+    color: theme.colors.error,
+    fontFamily: 'monospace',
+    marginTop: theme.spacing.xs,
   },
 });
 

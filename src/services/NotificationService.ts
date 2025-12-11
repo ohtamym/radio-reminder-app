@@ -76,7 +76,7 @@ export class NotificationService {
    * @param taskId タスクID（通知の識別子として使用）
    * @param programName 番組名
    * @param stationName 放送局名
-   * @param deadlineDatetime 期限日時（ISO8601形式）
+   * @param deadlineDatetime 期限日時（YYYY-MM-DD HH:mm:ss形式）
    * @returns スケジュールされた通知のID（失敗時はnull）
    */
   static async scheduleReminder(

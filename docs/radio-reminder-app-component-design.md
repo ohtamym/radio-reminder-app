@@ -317,8 +317,8 @@ const styles = StyleSheet.create({
 **Props**
 ```typescript
 interface DeadlineInfoProps {
-  deadline: string; // ISO8601形式
-  broadcastDatetime: string; // ISO8601形式
+  deadline: string; // YYYY-MM-DD HH:mm:ss形式
+  broadcastDatetime: string; // YYYY-MM-DD HH:mm:ss形式
 }
 ```
 
@@ -1544,7 +1544,8 @@ export const useTasks = () => {
       if (status === 'completed') {
         const task = tasks.find(t => t.id === taskId);
         if (task && task.repeat_type === 'weekly') {
-          await TaskService.generateNextTask(db, task.program_id);
+          // 前回タスクの放送日時から1週間後のタスクを生成
+          await TaskService.generateNextTask(db, task.program_id, task.broadcast_datetime);
         }
       }
       
@@ -1756,7 +1757,8 @@ export class TaskService {
         
         // 繰り返し設定がある場合は次回タスクを生成
         if (task.repeat_type === 'weekly') {
-          await this.generateNextTask(db, task.program_id);
+          // 前回タスクの放送日時から1週間後のタスクを生成
+          await this.generateNextTask(db, task.program_id, task.broadcast_datetime);
         }
       }
     });
@@ -1764,9 +1766,10 @@ export class TaskService {
 
   static async generateNextTask(
     db: SQLite.SQLiteDatabase,
-    programId: number
+    programId: number,
+    previousBroadcastDatetime: string
   ): Promise<void> {
-    // 番組情報を取得
+    // 番組情報を取得（時刻情報が必要）
     const program = await db.getFirstAsync(
       'SELECT * FROM programs WHERE id = ?',
       [programId]
@@ -1774,15 +1777,15 @@ export class TaskService {
 
     if (!program) return;
 
-    // 次回放送日時を計算
-    const nextBroadcast = getNextBroadcastDatetime(
-      program.day_of_week,
-      program.hour,
-      program.minute
-    );
+    // 前回放送日時から1週間後を計算
+    // 理由: 期限切れタスクが残っていた場合、現在時刻から計算すると
+    //       前回タスクの2週間後以降のタスクが作成されてしまうため
+    const nextBroadcast = dayjs(previousBroadcastDatetime)
+      .add(7, 'day')
+      .format('YYYY-MM-DD HH:mm:ss');
 
     // 期限を計算（7日後の29時 = 翌日5時）
-    const deadline = calculateDeadline(nextBroadcast);
+    const deadline = calculateDeadline(nextBroadcast, program.hour);
 
     // タスクを作成
     await db.runAsync(`

@@ -140,8 +140,8 @@ export const useTasks = (): UseTasksReturn => {
           const task = tasks.find((t) => t.id === id);
 
           if (task && task.repeat_type === 'weekly') {
-            // 繰り返し設定がある場合は次回タスクを生成
-            await TaskService.generateNextTask(db, task.program_id);
+            // 繰り返し設定がある場合は次回タスクを生成（前回放送日時から1週間後）
+            await TaskService.generateNextTask(db, task.program_id, task.broadcast_datetime);
           }
         }
 

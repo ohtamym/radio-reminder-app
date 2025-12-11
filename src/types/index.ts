@@ -46,9 +46,9 @@ export interface Program {
   minute: number;
   /** 繰り返し設定 */
   repeat_type: RepeatType;
-  /** 作成日時（ISO8601文字列） */
+  /** 作成日時（YYYY-MM-DD HH:mm:ss形式） */
   created_at: string;
-  /** 更新日時（ISO8601文字列） */
+  /** 更新日時（YYYY-MM-DD HH:mm:ss形式） */
   updated_at: string;
 }
 
@@ -60,17 +60,17 @@ export interface Task {
   id: number;
   /** 番組マスターID（外部キー） */
   program_id: number;
-  /** 放送日時（ISO8601文字列） */
+  /** 放送日時（YYYY-MM-DD HH:mm:ss形式） */
   broadcast_datetime: string;
-  /** 期限日時（ISO8601文字列） */
+  /** 期限日時（YYYY-MM-DD HH:mm:ss形式） */
   deadline_datetime: string;
   /** タスクステータス */
   status: TaskStatus;
-  /** 聴取完了日時（ISO8601文字列、NULL許可） */
+  /** 聴取完了日時（YYYY-MM-DD HH:mm:ss形式、NULL許可） */
   completed_at: string | null;
-  /** 作成日時（ISO8601文字列） */
+  /** 作成日時（YYYY-MM-DD HH:mm:ss形式） */
   created_at: string;
-  /** 更新日時（ISO8601文字列） */
+  /** 更新日時（YYYY-MM-DD HH:mm:ss形式） */
   updated_at: string;
 }
 

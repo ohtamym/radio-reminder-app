@@ -96,7 +96,7 @@ export class ProgramService {
 
         const deadline = calculateDeadline(broadcast, data.hour);
 
-        await db.runAsync(
+        const taskResult = await db.runAsync(
           `INSERT INTO tasks (
             program_id,
             broadcast_datetime,
@@ -105,6 +105,16 @@ export class ProgramService {
           ) VALUES (?, ?, ?, 'unlistened')`,
           [createdProgramId, broadcast, deadline]
         );
+
+        // 通知をスケジュール
+        if (taskResult.lastInsertRowId) {
+          await NotificationService.scheduleReminder(
+            taskResult.lastInsertRowId,
+            data.program_name,
+            data.station_name,
+            deadline
+          );
+        }
       });
 
       if (createdProgramId === undefined) {

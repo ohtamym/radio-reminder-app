@@ -33,8 +33,8 @@
 | hour | INTEGER | ○ | - | 放送時刻（時）5-29 |
 | minute | INTEGER | ○ | - | 放送時刻（分）0, 15, 30, 45 |
 | repeat_type | TEXT | ○ | - | 繰り返し種別（'none', 'weekly'） |
-| created_at | TEXT | ○ | CURRENT_TIMESTAMP | 登録日時（ISO8601形式） |
-| updated_at | TEXT | ○ | CURRENT_TIMESTAMP | 更新日時（ISO8601形式） |
+| created_at | TEXT | ○ | CURRENT_TIMESTAMP | 登録日時（YYYY-MM-DD HH:mm:ss形式） |
+| updated_at | TEXT | ○ | CURRENT_TIMESTAMP | 更新日時（YYYY-MM-DD HH:mm:ss形式） |
 
 #### 2.1.2 制約
 
@@ -107,12 +107,12 @@ VALUES
 |---------|------|------|-------------|------|
 | id | INTEGER | ○ | AUTO_INCREMENT | 主キー（自動採番） |
 | program_id | INTEGER | ○ | - | 番組マスタID（外部キー） |
-| broadcast_datetime | TEXT | ○ | - | 放送日時（ISO8601形式） |
-| deadline_datetime | TEXT | ○ | - | 期限日時（ISO8601形式） |
+| broadcast_datetime | TEXT | ○ | - | 放送日時（YYYY-MM-DD HH:mm:ss形式） |
+| deadline_datetime | TEXT | ○ | - | 期限日時（YYYY-MM-DD HH:mm:ss形式） |
 | status | TEXT | ○ | 'unlistened' | ステータス（'unlistened', 'listening', 'completed'） |
-| completed_at | TEXT | - | NULL | 聴取完了日時（ISO8601形式） |
-| created_at | TEXT | ○ | CURRENT_TIMESTAMP | 登録日時（ISO8601形式） |
-| updated_at | TEXT | ○ | CURRENT_TIMESTAMP | 更新日時（ISO8601形式） |
+| completed_at | TEXT | - | NULL | 聴取完了日時（YYYY-MM-DD HH:mm:ss形式） |
+| created_at | TEXT | ○ | CURRENT_TIMESTAMP | 登録日時（YYYY-MM-DD HH:mm:ss形式） |
+| updated_at | TEXT | ○ | CURRENT_TIMESTAMP | 更新日時（YYYY-MM-DD HH:mm:ss形式） |
 
 #### 2.2.2 制約
 
@@ -406,19 +406,22 @@ AND completed_at < datetime('now', 'localtime', '-1 month');
 
 ```sql
 -- 特定の番組の最新タスクを取得
-SELECT * FROM tasks 
-WHERE program_id = ? 
-ORDER BY broadcast_datetime DESC 
+-- 注: 次回タスク生成時には、前回タスクのbroadcast_datetimeから1週間後を計算する
+-- 理由: 期限切れタスクが残っていた場合、現在時刻から計算すると
+--       前回タスクの2週間後以降のタスクが作成されてしまうため
+SELECT * FROM tasks
+WHERE program_id = ?
+ORDER BY broadcast_datetime DESC
 LIMIT 1;
 
--- 次回放送日時を計算するためのプログラム情報取得
-SELECT 
+-- 時刻情報取得（期限計算に必要）
+SELECT
     id,
     day_of_week,
     hour,
     minute,
     repeat_type
-FROM programs 
+FROM programs
 WHERE id = ?;
 ```
 
@@ -724,8 +727,8 @@ db.runAsync(
 
 ### 13.1 日時の扱い
 
-- **保存形式**: ISO8601形式（例: '2024-12-05T18:00:00'）
-- **タイムゾーン**: ローカル時刻で統一
+- **保存形式**: YYYY-MM-DD HH:mm:ss形式（SQLite標準形式、例: '2024-12-05 18:00:00'）
+- **タイムゾーン**: ローカル時刻で統一（Asia/Tokyo）
 - **SQLite関数**: `datetime('now', 'localtime')` を使用
 
 ### 13.2 トランザクション管理

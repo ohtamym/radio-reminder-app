@@ -86,22 +86,22 @@ export const getRemainingDaysColor = (days: number): string => {
  * @param dayOfWeek - 曜日（0=日曜、1=月曜、...、6=土曜）
  * @param hour - 時（5-29）29時 = 翌日5時
  * @param minute - 分（0, 15, 30, 45）
- * @returns ISO8601形式の日時文字列
+ * @returns YYYY-MM-DD HH:mm:ss形式の日時文字列（SQLite標準形式）
  *
  * @example
  * // 現在: 2024-12-05(木) 15:00
  * getNextBroadcastDatetime(4, 18, 0)
- * // => '2024-12-05T18:00:00' (当日の18:00)
+ * // => '2024-12-05 18:00:00' (当日の18:00)
  *
  * @example
  * // 現在: 2024-12-05(木) 20:00
  * getNextBroadcastDatetime(4, 18, 0)
- * // => '2024-12-12T18:00:00' (次週木曜の18:00)
+ * // => '2024-12-12 18:00:00' (次週木曜の18:00)
  *
  * @example
  * // 29時台の処理
  * getNextBroadcastDatetime(2, 25, 0)
- * // => '2024-12-04T01:00:00' (水曜の25:00 = 木曜の1:00)
+ * // => '2024-12-04 01:00:00' (水曜の25:00 = 木曜の1:00)
  */
 export const getNextBroadcastDatetime = (
   dayOfWeek: number,
@@ -141,18 +141,18 @@ export const getNextBroadcastDatetime = (
  * 放送日時の7日後 + 29時間 = 8日後の5:00
  * 24時以降の番組は、番組表上の日付（前日）を基準とする
  *
- * @param broadcastDatetime - ISO8601形式の放送日時文字列
+ * @param broadcastDatetime - YYYY-MM-DD HH:mm:ss形式の放送日時文字列（SQLite標準形式）
  * @param originalHour - 元の放送時（5-29）。24時以降かの判定に使用
- * @returns ISO8601形式の期限日時文字列
+ * @returns YYYY-MM-DD HH:mm:ss形式の期限日時文字列（SQLite標準形式）
  *
  * @example
- * calculateDeadline('2024-12-05T18:00:00', 18)
- * // => '2024-12-13T05:00:00' (8日後の5:00)
+ * calculateDeadline('2024-12-05 18:00:00', 18)
+ * // => '2024-12-13 05:00:00' (8日後の5:00)
  *
  * @example
  * // 火曜24時（= 水曜0時）の番組の場合
- * calculateDeadline('2024-12-04T00:00:00', 24)
- * // => '2024-12-11T05:00:00' (火曜基準で8日後の5:00 = 次週水曜5時)
+ * calculateDeadline('2024-12-04 00:00:00', 24)
+ * // => '2024-12-11 05:00:00' (火曜基準で8日後の5:00 = 次週水曜5時)
  */
 export const calculateDeadline = (broadcastDatetime: string, originalHour: number): string => {
   let deadline = dayjs(broadcastDatetime).add(8, 'day');

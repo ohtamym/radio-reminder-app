@@ -6,6 +6,7 @@
  */
 
 import * as SQLite from 'expo-sqlite';
+import dayjs from 'dayjs';
 import { Task, TaskWithProgram, TaskStatus } from '@/types';
 import { getNextBroadcastDatetime, calculateDeadline } from '@/utils/dateUtils';
 import { AppError } from '@/utils/errorHandler';
@@ -224,6 +225,7 @@ export class TaskService {
       const expiredTasks = await db.getAllAsync<{
         id: number;
         program_id: number;
+        broadcast_datetime: string;
         station_name: string;
         program_name: string;
         repeat_type: string;
@@ -231,7 +233,7 @@ export class TaskService {
         hour: number;
         minute: number;
       }>(
-        `SELECT t.id, t.program_id, p.station_name, p.program_name, p.repeat_type, p.day_of_week, p.hour, p.minute
+        `SELECT t.id, t.program_id, t.broadcast_datetime, p.station_name, p.program_name, p.repeat_type, p.day_of_week, p.hour, p.minute
         FROM tasks t
         INNER JOIN programs p ON t.program_id = p.id
         WHERE t.status != 'completed'
@@ -256,12 +258,10 @@ export class TaskService {
 
           // 繰り返し設定がある場合は次回タスクを生成
           if (task.repeat_type === 'weekly') {
-            // 次回放送日時を計算
-            const nextBroadcast = getNextBroadcastDatetime(
-              task.day_of_week,
-              task.hour,
-              task.minute
-            );
+            // 前回放送日時から1週間後を計算
+            const nextBroadcast = dayjs(task.broadcast_datetime)
+              .add(7, 'day')
+              .format('YYYY-MM-DD HH:mm:ss');
 
             // 期限を計算
             const deadline = calculateDeadline(nextBroadcast, task.hour);
@@ -309,22 +309,25 @@ export class TaskService {
    *
    * 指定された番組の次回タスクを生成
    * 繰り返し設定（weekly）がある場合に使用
+   * 前回放送日時から1週間後のタスクを生成する
    *
    * @param db - SQLiteDatabaseインスタンス
    * @param programId - 番組ID
+   * @param previousBroadcastDatetime - 前回放送日時（YYYY-MM-DD HH:mm:ss）
    *
    * @throws AppError - データベースエラー
    *
    * @example
    * // タスク完了時に次回タスクを生成
-   * await TaskService.generateNextTask(db, programId);
+   * await TaskService.generateNextTask(db, programId, '2024-12-05 18:00:00');
    */
   static async generateNextTask(
     db: SQLite.SQLiteDatabase,
-    programId: number
+    programId: number,
+    previousBroadcastDatetime: string
   ): Promise<void> {
     try {
-      // 番組情報を取得
+      // 番組情報を取得（時刻情報が必要）
       const program = await db.getFirstAsync<{
         id: number;
         station_name: string;
@@ -338,12 +341,10 @@ export class TaskService {
         throw new AppError('番組が見つかりません', 'PROGRAM_NOT_FOUND');
       }
 
-      // 次回放送日時を計算
-      const nextBroadcast = getNextBroadcastDatetime(
-        program.day_of_week,
-        program.hour,
-        program.minute
-      );
+      // 前回放送日時から1週間後を計算
+      const nextBroadcast = dayjs(previousBroadcastDatetime)
+        .add(7, 'day')
+        .format('YYYY-MM-DD HH:mm:ss');
 
       // 期限を計算
       const deadline = calculateDeadline(nextBroadcast, program.hour);
