@@ -7,7 +7,7 @@
 
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { formatDate, calculateRemainingDays, getRemainingDaysColor } from '@/utils/dateUtils';
+import { formatDate, formatBroadcastDatetime, calculateRemainingDays, getRemainingDaysColor } from '@/utils/dateUtils';
 import { colors, spacing } from '@/theme';
 
 // ============================================
@@ -51,7 +51,7 @@ export const DeadlineInfo: React.FC<DeadlineInfoProps> = memo(
         <View style={styles.row}>
           <Text style={styles.label}>放送日時</Text>
           <Text style={styles.value}>
-            {formatDate(broadcastDatetime, 'YYYY/MM/DD(ddd) HH:mm')}
+            {formatBroadcastDatetime(broadcastDatetime, 'YYYY/MM/DD(ddd) HH:mm')}
           </Text>
         </View>
 

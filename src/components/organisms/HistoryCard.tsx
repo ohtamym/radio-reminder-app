@@ -12,7 +12,7 @@ import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/atoms';
 import { TaskWithProgram } from '@/types';
-import { formatDate } from '@/utils/dateUtils';
+import { formatDate, formatBroadcastDatetime } from '@/utils/dateUtils';
 import { theme } from '@/theme';
 
 // ============================================
@@ -59,7 +59,7 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ task }) => {
 
       {/* 放送日時 */}
       <Text style={styles.datetime}>
-        放送: {formatDate(task.broadcast_datetime, 'M/D(ddd) HH:mm')}
+        放送: {formatBroadcastDatetime(task.broadcast_datetime, 'M/D(ddd) HH:mm')}
       </Text>
 
       {/* 聴取日時 */}

@@ -15,6 +15,7 @@ import { Button, Badge } from '@/components/atoms';
 import { TaskWithProgram, TaskStatus } from '@/types';
 import {
   formatDate,
+  formatBroadcastDatetime,
   calculateRemainingDays,
   getRemainingDaysColor,
 } from '@/utils/dateUtils';
@@ -107,7 +108,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) =>
 
       {/* 放送日時 */}
       <Text style={styles.datetime}>
-        {formatDate(task.broadcast_datetime, 'M/D(ddd) HH:mm')}
+        {formatBroadcastDatetime(task.broadcast_datetime, 'M/D(ddd) HH:mm')}
       </Text>
 
       {/* 期限情報 */}

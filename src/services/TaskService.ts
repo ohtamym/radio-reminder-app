@@ -247,14 +247,21 @@ export class TaskService {
 
       console.log(`[TaskService] Found ${expiredTasks.length} expired tasks`);
 
-      // 期限切れタスクを削除し、必要に応じて次回タスクを生成
+      // 通知処理用の情報を保存
+      type NotificationTask = {
+        oldTaskId: number;
+        newTaskId?: number;
+        programName?: string;
+        stationName?: string;
+        deadline?: string;
+      };
+      const notificationTasks: NotificationTask[] = [];
+
+      // トランザクション内でデータベース操作のみ実行
       await db.withTransactionAsync(async () => {
         for (const task of expiredTasks) {
           // タスクを削除
           await db.runAsync('DELETE FROM tasks WHERE id = ?', [task.id]);
-
-          // 通知をキャンセル
-          await NotificationService.cancelNotification(task.id);
 
           // 繰り返し設定がある場合は次回タスクを生成
           if (task.repeat_type === 'weekly') {
@@ -277,18 +284,40 @@ export class TaskService {
               [task.program_id, nextBroadcast, deadline]
             );
 
-            // 通知をスケジュール
+            // 通知処理用の情報を保存
             if (result.lastInsertRowId) {
-              await NotificationService.scheduleReminder(
-                result.lastInsertRowId,
-                task.program_name,
-                task.station_name,
-                deadline
-              );
+              notificationTasks.push({
+                oldTaskId: task.id,
+                newTaskId: result.lastInsertRowId,
+                programName: task.program_name,
+                stationName: task.station_name,
+                deadline,
+              });
             }
+          } else {
+            // 繰り返しなしの場合は古いタスクの通知キャンセルのみ
+            notificationTasks.push({
+              oldTaskId: task.id,
+            });
           }
         }
       });
+
+      // トランザクション完了後に通知処理を実行
+      for (const notifTask of notificationTasks) {
+        // 古いタスクの通知をキャンセル
+        await NotificationService.cancelNotification(notifTask.oldTaskId);
+
+        // 新しいタスクの通知をスケジュール
+        if (notifTask.newTaskId && notifTask.programName && notifTask.stationName && notifTask.deadline) {
+          await NotificationService.scheduleReminder(
+            notifTask.newTaskId,
+            notifTask.programName,
+            notifTask.stationName,
+            notifTask.deadline
+          );
+        }
+      }
 
       console.log('[TaskService] Expired tasks processed successfully');
     } catch (error) {

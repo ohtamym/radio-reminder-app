@@ -38,6 +38,55 @@ export const formatDate = (date: string, format: string): string => {
   return dayjs(date).format(format);
 };
 
+/**
+ * 放送日時を29時台形式でフォーマットして返す
+ * 
+ * 0:00～4:59の時刻を前日の24:00～28:59として表示する
+ * （例: 12/13(土) 3:30 → 12/12(金) 27:30）
+ * 
+ * @param date - SQLite標準形式の日時文字列（YYYY-MM-DD HH:mm:ss）
+ * @param format - フォーマット文字列（dayjs形式）
+ * @returns 29時台形式でフォーマットされた日時文字列
+ * 
+ * @example
+ * formatBroadcastDatetime('2024-12-13 03:30:00', 'M/D(ddd) HH:mm')
+ * // => '12/12(金) 27:30'
+ * 
+ * @example
+ * formatBroadcastDatetime('2024-12-12 18:00:00', 'M/D(ddd) HH:mm')
+ * // => '12/12(木) 18:00'
+ */
+export const formatBroadcastDatetime = (date: string, format: string): string => {
+  const dt = dayjs(date);
+  const hour = dt.hour();
+
+  // 5:00未満の場合、29時台形式に変換
+  if (hour < 5) {
+    // 前日の日付
+    const adjustedDate = dt.subtract(1, 'day');
+    // 29時台の時刻（24～28時）
+    const adjustedHour = hour + 24;
+
+    // 時刻部分のパターンを検索（末尾の HH:mm または H:mm）
+    const timePattern = /(\s*)(HH?:mm)(\s*)$/;
+    const match = format.match(timePattern);
+
+    if (match) {
+      // 時刻部分を除いた日付フォーマット
+      const dateFormat = format.replace(timePattern, '');
+      // 日付部分をフォーマット
+      const dateStr = adjustedDate.format(dateFormat);
+      // 時刻文字列を生成
+      const timeStr = `${adjustedHour.toString().padStart(2, '0')}:${dt.minute().toString().padStart(2, '0')}`;
+      // 結合（元のスペースを保持）
+      return dateStr + match[1] + timeStr + match[3];
+    }
+  }
+
+  // 5:00以降、またはパターンマッチしない場合はそのまま
+  return dt.format(format);
+};
+
 // ============================================
 // 残り日数計算関数
 // ============================================
