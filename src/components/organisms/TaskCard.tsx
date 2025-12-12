@@ -20,6 +20,7 @@ import {
   getRemainingDaysColor,
 } from '@/utils/dateUtils';
 import { theme } from '@/theme';
+import dayjs from 'dayjs';
 
 // ============================================
 // 型定義
@@ -84,6 +85,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) =>
   const remainingDays = calculateRemainingDays(task.deadline_datetime);
   const deadlineColor = getRemainingDaysColor(remainingDays);
 
+  // 放送日時が未来かどうかを判定
+  const isFutureBroadcast = dayjs().isBefore(task.broadcast_datetime);
+
+  // 未来の放送の場合、透明度を下げる
+  const contentOpacity = isFutureBroadcast ? 0.5 : 1;
+
   return (
     <TouchableOpacity
       style={styles.card}
@@ -93,7 +100,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) =>
       accessibilityLabel={`${task.program_name}のタスク、残り${remainingDays}日`}
     >
       {/* ヘッダー: 放送局とステータスバッジ */}
-      <View style={styles.header}>
+      <View style={[styles.header, { opacity: contentOpacity }]}>
         <View style={styles.stationInfo}>
           <Text style={styles.emoji}>📻</Text>
           <Text style={styles.station}>{task.station_name}</Text>
@@ -102,22 +109,22 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) =>
       </View>
 
       {/* 番組名 */}
-      <Text style={styles.programName} numberOfLines={2}>
+      <Text style={[styles.programName, { opacity: contentOpacity }]} numberOfLines={2}>
         {task.program_name}
       </Text>
 
       {/* 放送日時 */}
-      <Text style={styles.datetime}>
+      <Text style={[styles.datetime, { opacity: contentOpacity }]}>
         {formatBroadcastDatetime(task.broadcast_datetime, 'M/D(ddd) HH:mm')}
       </Text>
 
       {/* 期限情報 */}
-      <Text style={[styles.deadline, { color: deadlineColor }]}>
+      <Text style={[styles.deadline, { color: deadlineColor, opacity: contentOpacity }]}>
         期限: あと{remainingDays}日 ({formatDate(task.deadline_datetime, 'M/D HH:mm')})
       </Text>
 
       {/* ステータス変更ボタン */}
-      <View style={styles.actions}>
+      <View style={[styles.actions, { opacity: contentOpacity }]}>
         {task.status === 'unlistened' && (
           <>
             <Button
