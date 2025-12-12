@@ -45,8 +45,8 @@ export interface TaskCardProps {
 /**
  * propsの比較関数
  *
- * タスクID、ステータス、期限が変更された場合のみ再レンダリング
- * これにより、不要な再レンダリングを防ぎ、FlatListのパフォーマンスを向上
+ * タスクID、ステータス、期限、番組名、放送局名が変更された場合のみ再レンダリング
+ * これにより、不要な再レンダリングを防ぎつつ、番組情報の変更も正しく反映
  *
  * @param prevProps - 前のprops
  * @param nextProps - 次のprops
@@ -59,7 +59,9 @@ const arePropsEqual = (
   return (
     prevProps.task.id === nextProps.task.id &&
     prevProps.task.status === nextProps.task.status &&
-    prevProps.task.deadline_datetime === nextProps.task.deadline_datetime
+    prevProps.task.deadline_datetime === nextProps.task.deadline_datetime &&
+    prevProps.task.program_name === nextProps.task.program_name &&
+    prevProps.task.station_name === nextProps.task.station_name
   );
 };
 
