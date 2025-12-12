@@ -233,6 +233,7 @@ export class ProgramService {
    *
    * FOREIGN KEY の CASCADE 設定により、
    * 関連するすべてのタスクも自動的に削除される
+   * 削除前に関連タスクの通知をすべてキャンセルする
    *
    * @param db - SQLiteDatabaseインスタンス
    * @param id - 番組ID
@@ -244,9 +245,23 @@ export class ProgramService {
    */
   static async deleteProgram(db: SQLite.SQLiteDatabase, id: number): Promise<void> {
     try {
+      // 削除前に関連タスクのIDを取得
+      const tasks = await db.getAllAsync<{ id: number }>(
+        'SELECT id FROM tasks WHERE program_id = ?',
+        [id]
+      );
+
+      // 番組を削除（CASCADE により関連タスクも削除される）
       await db.runAsync('DELETE FROM programs WHERE id = ?', [id]);
 
       console.log('[ProgramService] Program deleted:', id);
+
+      // 削除されたタスクの通知をキャンセル
+      for (const task of tasks) {
+        await NotificationService.cancelNotification(task.id);
+      }
+
+      console.log(`[ProgramService] Canceled ${tasks.length} notifications for program:`, id);
     } catch (error) {
       console.error('[ProgramService] Delete program failed:', error);
       throw new AppError('番組の削除に失敗しました', 'DELETE_PROGRAM_FAILED');
