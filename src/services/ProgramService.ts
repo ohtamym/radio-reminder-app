@@ -56,6 +56,8 @@ export class ProgramService {
   ): Promise<number> {
     try {
       let createdProgramId: number | undefined;
+      let createdTaskId: number | undefined;
+      let taskDeadline: string | undefined;
 
       await db.withTransactionAsync(async () => {
         // 1. 番組を作成
@@ -95,6 +97,7 @@ export class ProgramService {
         }
 
         const deadline = calculateDeadline(broadcast, data.hour);
+        taskDeadline = deadline;
 
         const taskResult = await db.runAsync(
           `INSERT INTO tasks (
@@ -106,15 +109,7 @@ export class ProgramService {
           [createdProgramId, broadcast, deadline]
         );
 
-        // 通知をスケジュール
-        if (taskResult.lastInsertRowId) {
-          await NotificationService.scheduleReminder(
-            taskResult.lastInsertRowId,
-            data.program_name,
-            data.station_name,
-            deadline
-          );
-        }
+        createdTaskId = taskResult.lastInsertRowId;
       });
 
       if (createdProgramId === undefined) {
@@ -122,6 +117,23 @@ export class ProgramService {
       }
 
       console.log('[ProgramService] Program created:', createdProgramId);
+
+      // トランザクション完了後に通知をスケジュール
+      // 通知処理のエラーは番組作成の失敗とはみなさない
+      if (createdTaskId && taskDeadline) {
+        try {
+          await NotificationService.scheduleReminder(
+            createdTaskId,
+            data.program_name,
+            data.station_name,
+            taskDeadline
+          );
+        } catch (notificationError) {
+          // 通知処理のエラーはログのみ出力し、番組作成は成功とみなす
+          console.error(`[ProgramService] Notification scheduling failed for task ${createdTaskId}:`, notificationError);
+        }
+      }
+
       return createdProgramId;
     } catch (error) {
       console.error('[ProgramService] Create program failed:', error);
@@ -257,8 +269,14 @@ export class ProgramService {
       console.log('[ProgramService] Program deleted:', id);
 
       // 削除されたタスクの通知をキャンセル
+      // 通知処理のエラーは番組削除の失敗とはみなさない
       for (const task of tasks) {
-        await NotificationService.cancelNotification(task.id);
+        try {
+          await NotificationService.cancelNotification(task.id);
+        } catch (notificationError) {
+          // 通知処理のエラーはログのみ出力し、番組削除は成功とみなす
+          console.error(`[ProgramService] Notification cancellation failed for task ${task.id}:`, notificationError);
+        }
       }
 
       console.log(`[ProgramService] Canceled ${tasks.length} notifications for program:`, id);
@@ -317,13 +335,19 @@ export class ProgramService {
       console.log('[ProgramService] First task generated for:', programId);
 
       // 通知をスケジュール
+      // 通知処理のエラーはタスク生成の失敗とはみなさない
       if (result.lastInsertRowId) {
-        await NotificationService.scheduleReminder(
-          result.lastInsertRowId,
-          data.program_name,
-          data.station_name,
-          deadline
-        );
+        try {
+          await NotificationService.scheduleReminder(
+            result.lastInsertRowId,
+            data.program_name,
+            data.station_name,
+            deadline
+          );
+        } catch (notificationError) {
+          // 通知処理のエラーはログのみ出力し、タスク生成は成功とみなす
+          console.error(`[ProgramService] Notification scheduling failed for task ${result.lastInsertRowId}:`, notificationError);
+        }
       }
     } catch (error) {
       console.error('[ProgramService] Generate first task failed:', error);

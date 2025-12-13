@@ -142,7 +142,13 @@ export class TaskService {
         );
 
         // 通知をキャンセル（完了したタスクは通知不要）
-        await NotificationService.cancelNotification(id);
+        // 通知処理のエラーはステータス更新の失敗とはみなさない
+        try {
+          await NotificationService.cancelNotification(id);
+        } catch (notificationError) {
+          // 通知処理のエラーはログのみ出力し、ステータス更新は成功とみなす
+          console.error(`[TaskService] Notification cancellation failed for task ${id}:`, notificationError);
+        }
       } else {
         // それ以外は completed_at をクリア
         await db.runAsync(
@@ -191,7 +197,13 @@ export class TaskService {
       console.log('[TaskService] Task deleted:', id);
 
       // 通知をキャンセル
-      await NotificationService.cancelNotification(id);
+      // 通知処理のエラーはタスク削除の失敗とはみなさない
+      try {
+        await NotificationService.cancelNotification(id);
+      } catch (notificationError) {
+        // 通知処理のエラーはログのみ出力し、タスク削除は成功とみなす
+        console.error(`[TaskService] Notification cancellation failed for task ${id}:`, notificationError);
+      }
     } catch (error) {
       console.error('[TaskService] Delete task failed:', error);
       throw new AppError('タスクの削除に失敗しました', 'DELETE_TASK_FAILED');
@@ -304,18 +316,24 @@ export class TaskService {
       });
 
       // トランザクション完了後に通知処理を実行
+      // 通知処理のエラーはクリーンアップ全体を失敗させないよう個別に処理
       for (const notifTask of notificationTasks) {
-        // 古いタスクの通知をキャンセル
-        await NotificationService.cancelNotification(notifTask.oldTaskId);
+        try {
+          // 古いタスクの通知をキャンセル
+          await NotificationService.cancelNotification(notifTask.oldTaskId);
 
-        // 新しいタスクの通知をスケジュール
-        if (notifTask.newTaskId && notifTask.programName && notifTask.stationName && notifTask.deadline) {
-          await NotificationService.scheduleReminder(
-            notifTask.newTaskId,
-            notifTask.programName,
-            notifTask.stationName,
-            notifTask.deadline
-          );
+          // 新しいタスクの通知をスケジュール
+          if (notifTask.newTaskId && notifTask.programName && notifTask.stationName && notifTask.deadline) {
+            await NotificationService.scheduleReminder(
+              notifTask.newTaskId,
+              notifTask.programName,
+              notifTask.stationName,
+              notifTask.deadline
+            );
+          }
+        } catch (notificationError) {
+          // 通知処理のエラーはログのみ出力し、処理は継続
+          console.error(`[TaskService] Notification processing failed for task ${notifTask.oldTaskId}:`, notificationError);
         }
       }
 
@@ -392,13 +410,19 @@ export class TaskService {
       console.log('[TaskService] Next task generated for:', programId);
 
       // 通知をスケジュール
+      // 通知処理のエラーはタスク生成の失敗とはみなさない
       if (result.lastInsertRowId) {
-        await NotificationService.scheduleReminder(
-          result.lastInsertRowId,
-          program.program_name,
-          program.station_name,
-          deadline
-        );
+        try {
+          await NotificationService.scheduleReminder(
+            result.lastInsertRowId,
+            program.program_name,
+            program.station_name,
+            deadline
+          );
+        } catch (notificationError) {
+          // 通知処理のエラーはログのみ出力し、タスク生成は成功とみなす
+          console.error(`[TaskService] Notification scheduling failed for task ${result.lastInsertRowId}:`, notificationError);
+        }
       }
     } catch (error) {
       console.error('[TaskService] Generate next task failed:', error);
