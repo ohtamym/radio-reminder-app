@@ -200,6 +200,36 @@ completed_at       TEXT
 npx tsc --noEmit
 ```
 
+### テスト実行
+
+```bash
+# 全テストを実行
+npm test
+
+# 特定のテストファイルを実行
+npm test -- <テストファイルのパス>
+
+# Watch モードでテストを実行
+npm run test:watch
+
+# カバレッジレポート付きでテストを実行
+npm run test:coverage
+```
+
+#### テスト済みモジュール
+
+- ✅ **dateUtils**: 日時操作関数（41 tests, 100% coverage）
+- ✅ **TaskService**: タスク管理サービス（23 tests, 94.87% coverage）
+- ✅ **Atoms Components**: Button, Badge, Text, Input（58 tests）
+
+#### テスト実装ガイドライン
+
+- **Unit tests**: Utils（dateUtils）とServices（TaskService, ProgramService）
+- **Component tests**: Atoms、Molecules、Organisms
+- **Integration tests**: ユーザーフロー全体（番組作成 → タスク完了 → 次回生成確認）
+- **テストフレームワーク**: Jest + React Native Testing Library
+- **カバレッジ目標**: 70%以上（statements, branches, functions, lines）
+
 ### コーディング規約
 
 - React Native Best Practices 2025に準拠
