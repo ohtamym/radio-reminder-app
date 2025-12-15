@@ -40,18 +40,18 @@ export const formatDate = (date: string, format: string): string => {
 
 /**
  * 放送日時を29時台形式でフォーマットして返す
- * 
+ *
  * 0:00～4:59の時刻を前日の24:00～28:59として表示する
  * （例: 12/13(土) 3:30 → 12/12(金) 27:30）
- * 
+ *
  * @param date - SQLite標準形式の日時文字列（YYYY-MM-DD HH:mm:ss）
  * @param format - フォーマット文字列（dayjs形式）
  * @returns 29時台形式でフォーマットされた日時文字列
- * 
+ *
  * @example
  * formatBroadcastDatetime('2024-12-13 03:30:00', 'M/D(ddd) HH:mm')
  * // => '12/12(金) 27:30'
- * 
+ *
  * @example
  * formatBroadcastDatetime('2024-12-12 18:00:00', 'M/D(ddd) HH:mm')
  * // => '12/12(木) 18:00'
@@ -163,12 +163,7 @@ export const getNextBroadcastDatetime = (
   const actualHour = hour >= 24 ? hour - 24 : hour;
 
   // 指定曜日・時刻のdayjsオブジェクトを作成
-  let next = dayjs()
-    .day(dayOfWeek)
-    .hour(actualHour)
-    .minute(minute)
-    .second(0)
-    .millisecond(0);
+  let next = dayjs().day(dayOfWeek).hour(actualHour).minute(minute).second(0).millisecond(0);
 
   // 29時台の場合は1日加算（翌日の早朝になる）
   if (hour >= 24) {
@@ -211,10 +206,5 @@ export const calculateDeadline = (broadcastDatetime: string, originalHour: numbe
     deadline = deadline.subtract(1, 'day');
   }
 
-  return deadline
-    .hour(5)
-    .minute(0)
-    .second(0)
-    .millisecond(0)
-    .format('YYYY-MM-DD HH:mm:ss');
+  return deadline.hour(5).minute(0).second(0).millisecond(0).format('YYYY-MM-DD HH:mm:ss');
 };

@@ -20,9 +20,11 @@ export type RootStackParamList = {
    * 番組登録/編集画面
    * - programId: 編集モードの場合に番組IDを渡す（オプショナル）
    */
-  ProgramForm: {
-    programId?: number;
-  } | undefined;
+  ProgramForm:
+    | {
+        programId?: number;
+      }
+    | undefined;
 
   /**
    * タスク詳細画面

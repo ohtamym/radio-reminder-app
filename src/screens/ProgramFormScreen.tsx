@@ -51,10 +51,7 @@ type ProgramFormScreenProps = NativeStackScreenProps<RootStackParamList, 'Progra
  * // 編集
  * <ProgramFormScreen navigation={navigation} route={{ params: { programId: 1 } }} />
  */
-export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({ navigation, route }) => {
   // ============================================
   // State & Hooks
   // ============================================
@@ -157,7 +154,7 @@ export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
   return (
     <View style={styles.container}>
       <ProgramForm
-        initialData={isEditMode ? (program || undefined) : undefined}
+        initialData={isEditMode ? program || undefined : undefined}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
       />

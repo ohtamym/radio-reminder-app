@@ -8,12 +8,7 @@
  */
 
 import React, { memo } from 'react';
-import {
-  Text as RNText,
-  TextProps as RNTextProps,
-  StyleSheet,
-  TextStyle,
-} from 'react-native';
+import { Text as RNText, TextProps as RNTextProps, StyleSheet, TextStyle } from 'react-native';
 import { typography } from '@/theme/typography';
 import { colors } from '@/theme/colors';
 
@@ -84,13 +79,7 @@ const Text: React.FC<TextProps> = ({
 
   return (
     <RNText
-      style={[
-        styles.text,
-        variantStyle,
-        { fontWeight },
-        color && { color },
-        style,
-      ]}
+      style={[styles.text, variantStyle, { fontWeight }, color && { color }, style]}
       {...rest}
     >
       {children}

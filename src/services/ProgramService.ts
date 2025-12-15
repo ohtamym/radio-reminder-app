@@ -50,10 +50,7 @@ export class ProgramService {
    *   repeat_type: 'weekly'
    * });
    */
-  static async createProgram(
-    db: SQLite.SQLiteDatabase,
-    data: ProgramFormData
-  ): Promise<number> {
+  static async createProgram(db: SQLite.SQLiteDatabase, data: ProgramFormData): Promise<number> {
     try {
       let createdProgramId: number | undefined;
       let createdTaskId: number | undefined;
@@ -83,11 +80,7 @@ export class ProgramService {
         createdProgramId = result.lastInsertRowId;
 
         // 2. 初回タスクを生成
-        let broadcast = getNextBroadcastDatetime(
-          data.day_of_week,
-          data.hour,
-          data.minute
-        );
+        let broadcast = getNextBroadcastDatetime(data.day_of_week, data.hour, data.minute);
 
         // 繰り返し設定が「毎週」の場合は、前回（1週間前）の放送日時にする
         // 理由: タスク作成時には、前回放送の聴取期限がまだ来ていないため
@@ -130,7 +123,10 @@ export class ProgramService {
           );
         } catch (notificationError) {
           // 通知処理のエラーはログのみ出力し、番組作成は成功とみなす
-          console.error(`[ProgramService] Notification scheduling failed for task ${createdTaskId}:`, notificationError);
+          console.error(
+            `[ProgramService] Notification scheduling failed for task ${createdTaskId}:`,
+            notificationError
+          );
         }
       }
 
@@ -158,15 +154,9 @@ export class ProgramService {
    *   console.log(program.program_name);
    * }
    */
-  static async getProgramById(
-    db: SQLite.SQLiteDatabase,
-    id: number
-  ): Promise<Program | null> {
+  static async getProgramById(db: SQLite.SQLiteDatabase, id: number): Promise<Program | null> {
     try {
-      const result = await db.getFirstAsync<Program>(
-        'SELECT * FROM programs WHERE id = ?',
-        [id]
-      );
+      const result = await db.getFirstAsync<Program>('SELECT * FROM programs WHERE id = ?', [id]);
 
       return result || null;
     } catch (error) {
@@ -275,7 +265,10 @@ export class ProgramService {
           await NotificationService.cancelNotification(task.id);
         } catch (notificationError) {
           // 通知処理のエラーはログのみ出力し、番組削除は成功とみなす
-          console.error(`[ProgramService] Notification cancellation failed for task ${task.id}:`, notificationError);
+          console.error(
+            `[ProgramService] Notification cancellation failed for task ${task.id}:`,
+            notificationError
+          );
         }
       }
 
@@ -313,11 +306,7 @@ export class ProgramService {
   ): Promise<void> {
     try {
       // 次回放送日時を計算
-      const nextBroadcast = getNextBroadcastDatetime(
-        data.day_of_week,
-        data.hour,
-        data.minute
-      );
+      const nextBroadcast = getNextBroadcastDatetime(data.day_of_week, data.hour, data.minute);
 
       // 期限を計算（8日後の5:00）
       const deadline = calculateDeadline(nextBroadcast, data.hour);
@@ -346,15 +335,15 @@ export class ProgramService {
           );
         } catch (notificationError) {
           // 通知処理のエラーはログのみ出力し、タスク生成は成功とみなす
-          console.error(`[ProgramService] Notification scheduling failed for task ${result.lastInsertRowId}:`, notificationError);
+          console.error(
+            `[ProgramService] Notification scheduling failed for task ${result.lastInsertRowId}:`,
+            notificationError
+          );
         }
       }
     } catch (error) {
       console.error('[ProgramService] Generate first task failed:', error);
-      throw new AppError(
-        'タスクの生成に失敗しました',
-        'GENERATE_TASK_FAILED'
-      );
+      throw new AppError('タスクの生成に失敗しました', 'GENERATE_TASK_FAILED');
     }
   }
 }

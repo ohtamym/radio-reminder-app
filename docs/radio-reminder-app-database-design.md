@@ -11,10 +11,10 @@
 
 ### 1.2 テーブル一覧
 
-| テーブル名 | 論理名 | 説明 |
-|-----------|--------|------|
-| programs | 番組マスタ | 繰り返し設定を含む番組の基本情報 |
-| tasks | タスク | 実際に聴取する対象となる個別の放送回 |
+| テーブル名 | 論理名     | 説明                                 |
+| ---------- | ---------- | ------------------------------------ |
+| programs   | 番組マスタ | 繰り返し設定を含む番組の基本情報     |
+| tasks      | タスク     | 実際に聴取する対象となる個別の放送回 |
 
 ---
 
@@ -24,26 +24,28 @@
 
 #### 2.1.1 テーブル定義
 
-| カラム名 | 型 | 必須 | デフォルト値 | 説明 |
-|---------|------|------|-------------|------|
-| id | INTEGER | ○ | AUTO_INCREMENT | 主キー（自動採番） |
-| station_name | TEXT | ○ | - | 放送局名 |
-| program_name | TEXT | ○ | - | 番組名 |
-| day_of_week | INTEGER | ○ | - | 曜日（0=日曜, 1=月曜, ..., 6=土曜） |
-| hour | INTEGER | ○ | - | 放送時刻（時）5-29 |
-| minute | INTEGER | ○ | - | 放送時刻（分）0, 15, 30, 45 |
-| repeat_type | TEXT | ○ | - | 繰り返し種別（'none', 'weekly'） |
-| created_at | TEXT | ○ | CURRENT_TIMESTAMP | 登録日時（YYYY-MM-DD HH:mm:ss形式） |
-| updated_at | TEXT | ○ | CURRENT_TIMESTAMP | 更新日時（YYYY-MM-DD HH:mm:ss形式） |
+| カラム名     | 型      | 必須 | デフォルト値      | 説明                                |
+| ------------ | ------- | ---- | ----------------- | ----------------------------------- |
+| id           | INTEGER | ○    | AUTO_INCREMENT    | 主キー（自動採番）                  |
+| station_name | TEXT    | ○    | -                 | 放送局名                            |
+| program_name | TEXT    | ○    | -                 | 番組名                              |
+| day_of_week  | INTEGER | ○    | -                 | 曜日（0=日曜, 1=月曜, ..., 6=土曜） |
+| hour         | INTEGER | ○    | -                 | 放送時刻（時）5-29                  |
+| minute       | INTEGER | ○    | -                 | 放送時刻（分）0, 15, 30, 45         |
+| repeat_type  | TEXT    | ○    | -                 | 繰り返し種別（'none', 'weekly'）    |
+| created_at   | TEXT    | ○    | CURRENT_TIMESTAMP | 登録日時（YYYY-MM-DD HH:mm:ss形式） |
+| updated_at   | TEXT    | ○    | CURRENT_TIMESTAMP | 更新日時（YYYY-MM-DD HH:mm:ss形式） |
 
 #### 2.1.2 制約
 
 **主キー制約**
+
 ```sql
 PRIMARY KEY (id)
 ```
 
 **CHECK制約**
+
 ```sql
 CHECK (day_of_week >= 0 AND day_of_week <= 6)
 CHECK (hour >= 5 AND hour <= 29)
@@ -52,6 +54,7 @@ CHECK (repeat_type IN ('none', 'weekly'))
 ```
 
 **NOT NULL制約**
+
 - 全カラム必須（created_at, updated_atはデフォルト値あり）
 
 #### 2.1.3 インデックス
@@ -91,7 +94,7 @@ CREATE INDEX idx_programs_repeat_type ON programs(repeat_type);
 
 ```sql
 INSERT INTO programs (station_name, program_name, day_of_week, hour, minute, repeat_type)
-VALUES 
+VALUES
     ('TBSラジオ', 'アフター6ジャンクション', 4, 18, 0, 'weekly'),
     ('文化放送', 'レコメン！', 3, 22, 0, 'weekly'),
     ('ニッポン放送', 'オールナイトニッポン', 2, 25, 0, 'none');
@@ -103,35 +106,39 @@ VALUES
 
 #### 2.2.1 テーブル定義
 
-| カラム名 | 型 | 必須 | デフォルト値 | 説明 |
-|---------|------|------|-------------|------|
-| id | INTEGER | ○ | AUTO_INCREMENT | 主キー（自動採番） |
-| program_id | INTEGER | ○ | - | 番組マスタID（外部キー） |
-| broadcast_datetime | TEXT | ○ | - | 放送日時（YYYY-MM-DD HH:mm:ss形式） |
-| deadline_datetime | TEXT | ○ | - | 期限日時（YYYY-MM-DD HH:mm:ss形式） |
-| status | TEXT | ○ | 'unlistened' | ステータス（'unlistened', 'listening', 'completed'） |
-| completed_at | TEXT | - | NULL | 聴取完了日時（YYYY-MM-DD HH:mm:ss形式） |
-| created_at | TEXT | ○ | CURRENT_TIMESTAMP | 登録日時（YYYY-MM-DD HH:mm:ss形式） |
-| updated_at | TEXT | ○ | CURRENT_TIMESTAMP | 更新日時（YYYY-MM-DD HH:mm:ss形式） |
+| カラム名           | 型      | 必須 | デフォルト値      | 説明                                                 |
+| ------------------ | ------- | ---- | ----------------- | ---------------------------------------------------- |
+| id                 | INTEGER | ○    | AUTO_INCREMENT    | 主キー（自動採番）                                   |
+| program_id         | INTEGER | ○    | -                 | 番組マスタID（外部キー）                             |
+| broadcast_datetime | TEXT    | ○    | -                 | 放送日時（YYYY-MM-DD HH:mm:ss形式）                  |
+| deadline_datetime  | TEXT    | ○    | -                 | 期限日時（YYYY-MM-DD HH:mm:ss形式）                  |
+| status             | TEXT    | ○    | 'unlistened'      | ステータス（'unlistened', 'listening', 'completed'） |
+| completed_at       | TEXT    | -    | NULL              | 聴取完了日時（YYYY-MM-DD HH:mm:ss形式）              |
+| created_at         | TEXT    | ○    | CURRENT_TIMESTAMP | 登録日時（YYYY-MM-DD HH:mm:ss形式）                  |
+| updated_at         | TEXT    | ○    | CURRENT_TIMESTAMP | 更新日時（YYYY-MM-DD HH:mm:ss形式）                  |
 
 #### 2.2.2 制約
 
 **主キー制約**
+
 ```sql
 PRIMARY KEY (id)
 ```
 
 **外部キー制約**
+
 ```sql
 FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
 ```
 
 **CHECK制約**
+
 ```sql
 CHECK (status IN ('unlistened', 'listening', 'completed'))
 ```
 
 **NOT NULL制約**
+
 - completed_at以外は必須（created_at, updated_at, statusはデフォルト値あり）
 
 #### 2.2.3 インデックス
@@ -179,7 +186,7 @@ CREATE INDEX idx_tasks_completed_at ON tasks(completed_at);
 
 ```sql
 INSERT INTO tasks (program_id, broadcast_datetime, deadline_datetime, status)
-VALUES 
+VALUES
     (1, '2024-12-05T18:00:00', '2024-12-13T05:00:00', 'unlistened'),
     (2, '2024-12-04T22:00:00', '2024-12-12T05:00:00', 'listening'),
     (3, '2024-12-03T01:00:00', '2024-12-11T05:00:00', 'unlistened');
@@ -215,11 +222,11 @@ programs (1) ─────< (N) tasks
 ```sql
 -- 番組を新規登録
 INSERT INTO programs (
-    station_name, 
-    program_name, 
-    day_of_week, 
-    hour, 
-    minute, 
+    station_name,
+    program_name,
+    day_of_week,
+    hour,
+    minute,
     repeat_type
 ) VALUES (?, ?, ?, ?, ?, ?);
 
@@ -250,8 +257,8 @@ SELECT * FROM programs WHERE day_of_week = ?;
 
 ```sql
 -- 番組情報を更新
-UPDATE programs 
-SET 
+UPDATE programs
+SET
     station_name = ?,
     program_name = ?,
     day_of_week = ?,
@@ -292,7 +299,7 @@ SELECT last_insert_rowid();
 
 ```sql
 -- 全タスクを番組情報と結合して取得（期限順）
-SELECT 
+SELECT
     t.id,
     t.program_id,
     p.station_name,
@@ -310,7 +317,7 @@ WHERE t.status != 'completed'
 ORDER BY t.deadline_datetime ASC;
 
 -- 特定のタスクを取得
-SELECT 
+SELECT
     t.*,
     p.station_name,
     p.program_name,
@@ -320,12 +327,12 @@ INNER JOIN programs p ON t.program_id = p.id
 WHERE t.id = ?;
 
 -- 特定の番組のタスクを全て取得
-SELECT * FROM tasks 
-WHERE program_id = ? 
+SELECT * FROM tasks
+WHERE program_id = ?
 ORDER BY broadcast_datetime DESC;
 
 -- ステータス別に取得
-SELECT 
+SELECT
     t.*,
     p.station_name,
     p.program_name
@@ -335,12 +342,12 @@ WHERE t.status = ?
 ORDER BY t.deadline_datetime ASC;
 
 -- 期限切れタスクを取得
-SELECT * FROM tasks 
-WHERE status != 'completed' 
+SELECT * FROM tasks
+WHERE status != 'completed'
 AND deadline_datetime < datetime('now', 'localtime');
 
 -- 聴取履歴を取得（完了日時の降順、1ヶ月以内）
-SELECT 
+SELECT
     t.*,
     p.station_name,
     p.program_name
@@ -355,23 +362,23 @@ ORDER BY t.completed_at DESC;
 
 ```sql
 -- ステータスを更新
-UPDATE tasks 
-SET 
+UPDATE tasks
+SET
     status = ?,
     updated_at = datetime('now', 'localtime')
 WHERE id = ?;
 
 -- ステータスを「聴取済み」に更新（完了日時も記録）
-UPDATE tasks 
-SET 
+UPDATE tasks
+SET
     status = 'completed',
     completed_at = datetime('now', 'localtime'),
     updated_at = datetime('now', 'localtime')
 WHERE id = ?;
 
 -- ステータスを「未聴取」または「聴取中」に戻す（完了日時をクリア）
-UPDATE tasks 
-SET 
+UPDATE tasks
+SET
     status = ?,
     completed_at = NULL,
     updated_at = datetime('now', 'localtime')
@@ -388,13 +395,13 @@ DELETE FROM tasks WHERE id = ?;
 DELETE FROM tasks WHERE program_id = ?;
 
 -- 期限切れタスクを削除
-DELETE FROM tasks 
-WHERE status != 'completed' 
+DELETE FROM tasks
+WHERE status != 'completed'
 AND deadline_datetime < datetime('now', 'localtime');
 
 -- 1ヶ月以上前の聴取済みタスクを削除
-DELETE FROM tasks 
-WHERE status = 'completed' 
+DELETE FROM tasks
+WHERE status = 'completed'
 AND completed_at < datetime('now', 'localtime', '-1 month');
 ```
 
@@ -429,7 +436,7 @@ WHERE id = ?;
 
 ```sql
 -- 期限まで24時間以内のタスク（通知対象）
-SELECT 
+SELECT
     t.id,
     t.program_id,
     p.station_name,
@@ -449,7 +456,7 @@ ORDER BY t.deadline_datetime ASC;
 
 ```sql
 -- 月別の聴取完了数
-SELECT 
+SELECT
     strftime('%Y-%m', completed_at) AS month,
     COUNT(*) AS completed_count
 FROM tasks
@@ -458,7 +465,7 @@ GROUP BY month
 ORDER BY month DESC;
 
 -- 放送局別の聴取数
-SELECT 
+SELECT
     p.station_name,
     COUNT(t.id) AS completed_count
 FROM tasks t
@@ -468,13 +475,13 @@ GROUP BY p.station_name
 ORDER BY completed_count DESC;
 
 -- 番組別の聴取率
-SELECT 
+SELECT
     p.program_name,
     p.station_name,
     COUNT(CASE WHEN t.status = 'completed' THEN 1 END) AS completed_count,
     COUNT(*) AS total_count,
     ROUND(
-        CAST(COUNT(CASE WHEN t.status = 'completed' THEN 1 END) AS FLOAT) / COUNT(*) * 100, 
+        CAST(COUNT(CASE WHEN t.status = 'completed' THEN 1 END) AS FLOAT) / COUNT(*) * 100,
         2
     ) AS completion_rate
 FROM programs p
@@ -491,21 +498,21 @@ ORDER BY completion_rate DESC;
 
 ```sql
 -- programsテーブルのupdated_at自動更新
-CREATE TRIGGER update_programs_updated_at 
+CREATE TRIGGER update_programs_updated_at
 AFTER UPDATE ON programs
 FOR EACH ROW
 BEGIN
-    UPDATE programs 
+    UPDATE programs
     SET updated_at = datetime('now', 'localtime')
     WHERE id = NEW.id;
 END;
 
 -- tasksテーブルのupdated_at自動更新
-CREATE TRIGGER update_tasks_updated_at 
+CREATE TRIGGER update_tasks_updated_at
 AFTER UPDATE ON tasks
 FOR EACH ROW
 BEGIN
-    UPDATE tasks 
+    UPDATE tasks
     SET updated_at = datetime('now', 'localtime')
     WHERE id = NEW.id;
 END;
@@ -519,7 +526,7 @@ END;
 
 ```sql
 -- program_idが存在しないタスクを検出（通常は発生しない）
-SELECT t.* 
+SELECT t.*
 FROM tasks t
 LEFT JOIN programs p ON t.program_id = p.id
 WHERE p.id IS NULL;
@@ -529,9 +536,9 @@ WHERE p.id IS NULL;
 
 ```sql
 -- 同じprogram_idとbroadcast_datetimeを持つタスクを検出
-SELECT 
-    program_id, 
-    broadcast_datetime, 
+SELECT
+    program_id,
+    broadcast_datetime,
     COUNT(*) AS count
 FROM tasks
 GROUP BY program_id, broadcast_datetime
@@ -542,13 +549,13 @@ HAVING COUNT(*) > 1;
 
 ```sql
 -- completed_atが設定されているがstatusがcompletedでないタスク
-SELECT * FROM tasks 
-WHERE completed_at IS NOT NULL 
+SELECT * FROM tasks
+WHERE completed_at IS NOT NULL
 AND status != 'completed';
 
 -- statusがcompletedだがcompleted_atが設定されていないタスク
-SELECT * FROM tasks 
-WHERE status = 'completed' 
+SELECT * FROM tasks
+WHERE status = 'completed'
 AND completed_at IS NULL;
 ```
 
@@ -561,7 +568,7 @@ AND completed_at IS NULL;
 ```sql
 -- クエリの実行計画を確認
 EXPLAIN QUERY PLAN
-SELECT 
+SELECT
     t.*,
     p.station_name,
     p.program_name
@@ -699,6 +706,7 @@ INSERT INTO tasks (program_id, broadcast_datetime, deadline_datetime, status, co
 - **禁止**: 文字列連結によるSQL生成
 
 **良い例（TypeScript/JavaScript）**
+
 ```typescript
 // expo-sqliteの場合
 db.runAsync(
@@ -708,6 +716,7 @@ db.runAsync(
 ```
 
 **悪い例（絶対に使用しない）**
+
 ```typescript
 // 危険：SQLインジェクションの脆弱性あり
 db.runAsync(
@@ -742,7 +751,7 @@ await db.withTransactionAsync(async () => {
     [...]
   );
   const programId = result.lastInsertRowId;
-  
+
   // タスクを生成
   await db.runAsync(
     'INSERT INTO tasks (...) VALUES (...)',
@@ -796,6 +805,7 @@ try {
 
 現在の設計では上記のデータ量で十分なパフォーマンスが得られる見込み。
 将来的にユーザー数やデータ量が増加した場合は以下を検討：
+
 - パーティショニング
 - アーカイブテーブルの導入
 - キャッシング戦略の見直し
@@ -808,7 +818,7 @@ try {
 
 ```sql
 -- 今日のタスク数を取得
-SELECT COUNT(*) FROM tasks 
+SELECT COUNT(*) FROM tasks
 WHERE status != 'completed'
 AND date(broadcast_datetime) = date('now', 'localtime');
 
@@ -819,7 +829,7 @@ AND completed_at >= date('now', 'localtime', 'weekday 0', '-7 days')
 AND completed_at < date('now', 'localtime', 'weekday 0');
 
 -- 最も聴いている放送局を取得
-SELECT 
+SELECT
     p.station_name,
     COUNT(t.id) AS listen_count
 FROM tasks t
@@ -839,12 +849,12 @@ UNION ALL
 SELECT 'tasks', COUNT(*) FROM tasks;
 
 -- 各ステータスのタスク数を確認
-SELECT status, COUNT(*) AS count 
-FROM tasks 
+SELECT status, COUNT(*) AS count
+FROM tasks
 GROUP BY status;
 
 -- 期限切れタスクの確認
-SELECT 
+SELECT
     t.id,
     p.program_name,
     t.broadcast_datetime,
@@ -907,20 +917,20 @@ CREATE INDEX idx_tasks_status_deadline ON tasks(status, deadline_datetime);
 CREATE INDEX idx_tasks_completed_at ON tasks(completed_at);
 
 -- トリガー作成
-CREATE TRIGGER update_programs_updated_at 
+CREATE TRIGGER update_programs_updated_at
 AFTER UPDATE ON programs
 FOR EACH ROW
 BEGIN
-    UPDATE programs 
+    UPDATE programs
     SET updated_at = datetime('now', 'localtime')
     WHERE id = NEW.id;
 END;
 
-CREATE TRIGGER update_tasks_updated_at 
+CREATE TRIGGER update_tasks_updated_at
 AFTER UPDATE ON tasks
 FOR EACH ROW
 BEGIN
-    UPDATE tasks 
+    UPDATE tasks
     SET updated_at = datetime('now', 'localtime')
     WHERE id = NEW.id;
 END;

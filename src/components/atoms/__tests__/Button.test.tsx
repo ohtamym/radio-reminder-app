@@ -36,25 +36,19 @@ describe('Button', () => {
   // ============================================
 
   it('primaryバリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Button variant="primary">プライマリー</Button>
-    );
+    const { getByText } = render(<Button variant="primary">プライマリー</Button>);
 
     expect(getByText('プライマリー')).toBeTruthy();
   });
 
   it('secondaryバリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Button variant="secondary">セカンダリー</Button>
-    );
+    const { getByText } = render(<Button variant="secondary">セカンダリー</Button>);
 
     expect(getByText('セカンダリー')).toBeTruthy();
   });
 
   it('dangerバリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Button variant="danger">削除</Button>
-    );
+    const { getByText } = render(<Button variant="danger">削除</Button>);
 
     expect(getByText('削除')).toBeTruthy();
   });
@@ -65,9 +59,7 @@ describe('Button', () => {
 
   it('onPressが呼ばれる', () => {
     const handlePress = jest.fn();
-    const { getByText } = render(
-      <Button onPress={handlePress}>押してください</Button>
-    );
+    const { getByText } = render(<Button onPress={handlePress}>押してください</Button>);
 
     fireEvent.press(getByText('押してください'));
 
@@ -76,9 +68,7 @@ describe('Button', () => {
 
   it('複数回タップするとonPressが複数回呼ばれる', () => {
     const handlePress = jest.fn();
-    const { getByText } = render(
-      <Button onPress={handlePress}>ボタン</Button>
-    );
+    const { getByText } = render(<Button onPress={handlePress}>ボタン</Button>);
 
     const button = getByText('ボタン');
     fireEvent.press(button);
@@ -95,7 +85,9 @@ describe('Button', () => {
   it('disabled=trueの場合、onPressが呼ばれない', () => {
     const handlePress = jest.fn();
     const { getByText } = render(
-      <Button disabled onPress={handlePress}>無効ボタン</Button>
+      <Button disabled onPress={handlePress}>
+        無効ボタン
+      </Button>
     );
 
     fireEvent.press(getByText('無効ボタン'));
@@ -106,7 +98,9 @@ describe('Button', () => {
   it('disabled=falseの場合、onPressが呼ばれる', () => {
     const handlePress = jest.fn();
     const { getByText } = render(
-      <Button disabled={false} onPress={handlePress}>有効ボタン</Button>
+      <Button disabled={false} onPress={handlePress}>
+        有効ボタン
+      </Button>
     );
 
     fireEvent.press(getByText('有効ボタン'));
@@ -119,17 +113,13 @@ describe('Button', () => {
   // ============================================
 
   it('fullWidth=trueでレンダリングできる', () => {
-    const { getByText } = render(
-      <Button fullWidth>全幅ボタン</Button>
-    );
+    const { getByText } = render(<Button fullWidth>全幅ボタン</Button>);
 
     expect(getByText('全幅ボタン')).toBeTruthy();
   });
 
   it('fullWidth=falseでレンダリングできる', () => {
-    const { getByText } = render(
-      <Button fullWidth={false}>通常幅ボタン</Button>
-    );
+    const { getByText } = render(<Button fullWidth={false}>通常幅ボタン</Button>);
 
     expect(getByText('通常幅ボタン')).toBeTruthy();
   });
@@ -180,12 +170,7 @@ describe('Button', () => {
   it('すべてのプロパティを組み合わせて使用できる', () => {
     const handlePress = jest.fn();
     const { getByText } = render(
-      <Button
-        variant="secondary"
-        fullWidth
-        disabled
-        onPress={handlePress}
-      >
+      <Button variant="secondary" fullWidth disabled onPress={handlePress}>
         複合プロパティ
       </Button>
     );

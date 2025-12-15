@@ -1,13 +1,13 @@
-import * as Notifications from "expo-notifications";
-import { Platform } from "react-native";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
+import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
 // dayjsのタイムゾーンプラグインを有効化
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Tokyo");
+dayjs.tz.setDefault('Asia/Tokyo');
 
 /**
  * NotificationService
@@ -37,36 +37,35 @@ export class NotificationService {
    */
   static async requestPermissions(): Promise<boolean> {
     try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
 
       let finalStatus = existingStatus;
 
       // パーミッションがまだ要求されていない場合、要求する
-      if (existingStatus !== "granted") {
+      if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
 
       // Androidの場合、通知チャンネルを設定
-      if (Platform.OS === "android") {
-        await Notifications.setNotificationChannelAsync("default", {
-          name: "リマインダー通知",
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'リマインダー通知',
           importance: Notifications.AndroidImportance.HIGH,
           vibrationPattern: [0, 250, 250, 250],
-          lightColor: "#FF231F7C",
+          lightColor: '#FF231F7C',
         });
       }
 
-      if (finalStatus !== "granted") {
-        console.warn("通知パーミッションが許可されませんでした");
+      if (finalStatus !== 'granted') {
+        console.warn('通知パーミッションが許可されませんでした');
         return false;
       }
 
-      console.log("通知パーミッションが許可されました");
+      console.log('通知パーミッションが許可されました');
       return true;
     } catch (error) {
-      console.error("通知パーミッション要求エラー:", error);
+      console.error('通知パーミッション要求エラー:', error);
       return false;
     }
   }
@@ -88,7 +87,7 @@ export class NotificationService {
     try {
       // 期限の1日前の18時を計算
       const deadline = dayjs(deadlineDatetime);
-      const reminderTime = deadline.subtract(1, "day").hour(18).minute(0).second(0);
+      const reminderTime = deadline.subtract(1, 'day').hour(18).minute(0).second(0);
 
       // 過去の日時の場合は通知をスケジュールしない
       const now = dayjs();
@@ -100,11 +99,11 @@ export class NotificationService {
       }
 
       // 残り時間を計算（時間単位）
-      const remainingHours = Math.ceil(deadline.diff(reminderTime, "hour", true));
+      const remainingHours = Math.ceil(deadline.diff(reminderTime, 'hour', true));
 
       // 通知内容の作成
       const notificationContent: Notifications.NotificationContentInput = {
-        title: "📻 ラジオ番組の聴取期限が近づいています",
+        title: '📻 ラジオ番組の聴取期限が近づいています',
         body: `${stationName} 「${programName}」\n残り約${remainingHours}時間`,
         data: { taskId },
         sound: true,
@@ -126,7 +125,7 @@ export class NotificationService {
 
       return identifier;
     } catch (error) {
-      console.error("通知のスケジュールに失敗しました:", error);
+      console.error('通知のスケジュールに失敗しました:', error);
       return null;
     }
   }
@@ -141,7 +140,7 @@ export class NotificationService {
       await Notifications.cancelScheduledNotificationAsync(identifier);
       console.log(`通知をキャンセルしました: taskId=${taskId}, identifier=${identifier}`);
     } catch (error) {
-      console.error("通知のキャンセルに失敗しました:", error);
+      console.error('通知のキャンセルに失敗しました:', error);
     }
   }
 
@@ -151,9 +150,9 @@ export class NotificationService {
   static async cancelAllNotifications(): Promise<void> {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-      console.log("すべての通知をキャンセルしました");
+      console.log('すべての通知をキャンセルしました');
     } catch (error) {
-      console.error("すべての通知のキャンセルに失敗しました:", error);
+      console.error('すべての通知のキャンセルに失敗しました:', error);
     }
   }
 
@@ -161,16 +160,13 @@ export class NotificationService {
    * スケジュール済みの通知一覧を取得する（デバッグ用）
    * @returns スケジュール済みの通知一覧
    */
-  static async getScheduledNotifications(): Promise<
-    Notifications.NotificationRequest[]
-  > {
+  static async getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
     try {
-      const notifications =
-        await Notifications.getAllScheduledNotificationsAsync();
+      const notifications = await Notifications.getAllScheduledNotificationsAsync();
       console.log(`スケジュール済みの通知数: ${notifications.length}`);
       return notifications;
     } catch (error) {
-      console.error("通知一覧の取得に失敗しました:", error);
+      console.error('通知一覧の取得に失敗しました:', error);
       return [];
     }
   }

@@ -21,10 +21,10 @@ let globalErrorInfo: string | null = null;
 
 /**
  * グローバルエラーハンドラー
- * 
+ *
  * React Nativeのグローバルエラーハンドラーを設定
  * ネイティブエラーやPromiseのrejectionなどもキャッチする
- * 
+ *
  * 注意: Expo Goの環境ではErrorUtilsが利用できない場合があります
  */
 export const setupGlobalErrorHandler = () => {
@@ -68,7 +68,9 @@ export const setupGlobalErrorHandler = () => {
       }
     } else {
       // ErrorUtilsが利用できない場合（Expo Goなど）
-      console.warn('[GlobalErrorHandler] ErrorUtils is not available. Skipping global error handler setup.');
+      console.warn(
+        '[GlobalErrorHandler] ErrorUtils is not available. Skipping global error handler setup.'
+      );
     }
   } catch (error) {
     // エラーハンドラーの設定に失敗した場合
@@ -78,14 +80,14 @@ export const setupGlobalErrorHandler = () => {
 
 /**
  * Promise rejectionハンドラー
- * 
+ *
  * 未処理のPromise rejectionをキャッチする
  */
 export const setupPromiseRejectionHandler = () => {
   // 未処理のPromise rejectionをキャッチ
   if (typeof global !== 'undefined') {
     const originalHandler = (global as any).onunhandledrejection;
-    
+
     (global as any).onunhandledrejection = (event: PromiseRejectionEvent) => {
       console.error('=== UNHANDLED PROMISE REJECTION ===');
       console.error('Reason:', event.reason);
@@ -95,7 +97,7 @@ export const setupPromiseRejectionHandler = () => {
         console.error('Error Stack:', event.reason.stack);
       }
       console.error('===================================');
-      
+
       if (originalHandler) {
         originalHandler(event);
       }
@@ -117,4 +119,3 @@ export const clearGlobalError = () => {
   globalError = null;
   globalErrorInfo = null;
 };
-

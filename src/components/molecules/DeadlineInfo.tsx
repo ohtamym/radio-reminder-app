@@ -7,7 +7,12 @@
 
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { formatDate, formatBroadcastDatetime, calculateRemainingDays, getRemainingDaysColor } from '@/utils/dateUtils';
+import {
+  formatDate,
+  formatBroadcastDatetime,
+  calculateRemainingDays,
+  getRemainingDaysColor,
+} from '@/utils/dateUtils';
 import { colors, spacing } from '@/theme';
 
 // ============================================
@@ -40,37 +45,31 @@ export interface DeadlineInfoProps {
  *   deadline="2024-01-23T05:00:00+09:00"
  * />
  */
-export const DeadlineInfo: React.FC<DeadlineInfoProps> = memo(
-  ({ deadline, broadcastDatetime }) => {
-    const remainingDays = calculateRemainingDays(deadline);
-    const color = getRemainingDaysColor(remainingDays);
+export const DeadlineInfo: React.FC<DeadlineInfoProps> = memo(({ deadline, broadcastDatetime }) => {
+  const remainingDays = calculateRemainingDays(deadline);
+  const color = getRemainingDaysColor(remainingDays);
 
-    return (
-      <View style={styles.container}>
-        {/* 放送日時 */}
-        <View style={styles.row}>
-          <Text style={styles.label}>放送日時</Text>
-          <Text style={styles.value}>
-            {formatBroadcastDatetime(broadcastDatetime, 'YYYY/MM/DD(ddd) HH:mm')}
-          </Text>
-        </View>
+  return (
+    <View style={styles.container}>
+      {/* 放送日時 */}
+      <View style={styles.row}>
+        <Text style={styles.label}>放送日時</Text>
+        <Text style={styles.value}>
+          {formatBroadcastDatetime(broadcastDatetime, 'YYYY/MM/DD(ddd) HH:mm')}
+        </Text>
+      </View>
 
-        {/* 視聴期限 */}
-        <View style={styles.row}>
-          <Text style={styles.label}>視聴期限</Text>
-          <View>
-            <Text style={styles.value}>
-              {formatDate(deadline, 'YYYY/MM/DD(ddd) HH:mm')}
-            </Text>
-            <Text style={[styles.remaining, { color }]}>
-              あと{remainingDays}日
-            </Text>
-          </View>
+      {/* 視聴期限 */}
+      <View style={styles.row}>
+        <Text style={styles.label}>視聴期限</Text>
+        <View>
+          <Text style={styles.value}>{formatDate(deadline, 'YYYY/MM/DD(ddd) HH:mm')}</Text>
+          <Text style={[styles.remaining, { color }]}>あと{remainingDays}日</Text>
         </View>
       </View>
-    );
-  }
-);
+    </View>
+  );
+});
 
 DeadlineInfo.displayName = 'DeadlineInfo';
 

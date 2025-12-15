@@ -34,41 +34,31 @@ describe('Text', () => {
   // ============================================
 
   it('h1バリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Text variant="h1">見出し1</Text>
-    );
+    const { getByText } = render(<Text variant="h1">見出し1</Text>);
 
     expect(getByText('見出し1')).toBeTruthy();
   });
 
   it('h2バリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Text variant="h2">見出し2</Text>
-    );
+    const { getByText } = render(<Text variant="h2">見出し2</Text>);
 
     expect(getByText('見出し2')).toBeTruthy();
   });
 
   it('bodyバリアント（デフォルト）でレンダリングできる', () => {
-    const { getByText } = render(
-      <Text variant="body">本文</Text>
-    );
+    const { getByText } = render(<Text variant="body">本文</Text>);
 
     expect(getByText('本文')).toBeTruthy();
   });
 
   it('captionバリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Text variant="caption">補足</Text>
-    );
+    const { getByText } = render(<Text variant="caption">補足</Text>);
 
     expect(getByText('補足')).toBeTruthy();
   });
 
   it('smallバリアントでレンダリングできる', () => {
-    const { getByText } = render(
-      <Text variant="small">小さいテキスト</Text>
-    );
+    const { getByText } = render(<Text variant="small">小さいテキスト</Text>);
 
     expect(getByText('小さいテキスト')).toBeTruthy();
   });
@@ -78,16 +68,12 @@ describe('Text', () => {
   // ============================================
 
   it('カスタムカラーでレンダリングできる', () => {
-    const { getByText } = render(
-      <Text color="#FF0000">赤いテキスト</Text>
-    );
+    const { getByText } = render(<Text color="#FF0000">赤いテキスト</Text>);
 
     const textElement = getByText('赤いテキスト');
     expect(textElement).toBeTruthy();
     expect(textElement.props.style).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ color: '#FF0000' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ color: '#FF0000' })])
     );
   });
 
@@ -102,30 +88,22 @@ describe('Text', () => {
   // ============================================
 
   it('bold=trueで太字になる', () => {
-    const { getByText } = render(
-      <Text bold>太字テキスト</Text>
-    );
+    const { getByText } = render(<Text bold>太字テキスト</Text>);
 
     const textElement = getByText('太字テキスト');
     expect(textElement).toBeTruthy();
     expect(textElement.props.style).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ fontWeight: '700' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ fontWeight: '700' })])
     );
   });
 
   it('bold=falseで通常の太さになる', () => {
-    const { getByText } = render(
-      <Text bold={false}>通常テキスト</Text>
-    );
+    const { getByText } = render(<Text bold={false}>通常テキスト</Text>);
 
     const textElement = getByText('通常テキスト');
     expect(textElement).toBeTruthy();
     expect(textElement.props.style).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ fontWeight: '400' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ fontWeight: '400' })])
     );
   });
 
@@ -143,9 +121,7 @@ describe('Text', () => {
     const textElement = getByText('青い見出し');
     expect(textElement).toBeTruthy();
     expect(textElement.props.style).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ color: '#0000FF' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ color: '#0000FF' })])
     );
   });
 
@@ -161,7 +137,7 @@ describe('Text', () => {
     expect(textElement.props.style).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ color: '#00FF00' }),
-        expect.objectContaining({ fontWeight: '700' })
+        expect.objectContaining({ fontWeight: '700' }),
       ])
     );
   });
@@ -173,8 +149,7 @@ describe('Text', () => {
   it('文字列以外の子要素も受け入れられる', () => {
     const { getByText } = render(
       <Text>
-        テキスト{' '}
-        <Text variant="small">小さいテキスト</Text>
+        テキスト <Text variant="small">小さいテキスト</Text>
       </Text>
     );
 

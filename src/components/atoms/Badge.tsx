@@ -53,13 +53,7 @@ const Badge: React.FC<BadgeProps> = ({ status, style }) => {
   const config = STATUS_CONFIG[status];
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: config.color },
-        style,
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: config.color }, style]}>
       <Text style={styles.emoji}>{config.emoji}</Text>
       <Text style={styles.label}>{config.label}</Text>
     </View>

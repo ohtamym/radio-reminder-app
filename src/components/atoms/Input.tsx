@@ -8,13 +8,7 @@
  */
 
 import React, { memo } from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TextInputProps,
-  ViewStyle,
-} from 'react-native';
+import { View, TextInput, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
 import Text from './Text';
 import { colors } from '@/theme/colors';
 import { typography } from '@/theme/typography';
@@ -65,28 +59,16 @@ export interface InputProps extends TextInputProps {
  *   error="番組名は必須です"
  * />
  */
-const Input: React.FC<InputProps> = ({
-  label,
-  error,
-  style,
-  ...rest
-}) => {
+const Input: React.FC<InputProps> = ({ label, error, style, ...rest }) => {
   return (
     <View style={[styles.container, style]}>
-      {label && (
-        <Text style={styles.label}>{label}</Text>
-      )}
+      {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
-        style={[
-          styles.input,
-          error && styles.inputError,
-        ]}
+        style={[styles.input, error && styles.inputError]}
         placeholderTextColor={colors.textSecondary}
         {...rest}
       />
-      {error && (
-        <Text style={styles.error}>{error}</Text>
-      )}
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 };

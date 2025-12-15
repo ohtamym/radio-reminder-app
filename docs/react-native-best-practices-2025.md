@@ -38,11 +38,13 @@ React Nativeは2015年にMetaによって導入され、JavaScriptとReactを使
 従来のBridgeアーキテクチャを置き換える同期通信インターフェース。
 
 **特徴:**
+
 - JavaScriptとC++オブジェクト間で直接参照を保持可能
 - シリアライゼーションコストの削減
 - 同期的なメソッド呼び出しが可能
 
 **メリット:**
+
 - リアルタイムデータ処理の高速化
 - ゲーム、AR、IoTダッシュボードなどのパフォーマンス要求の高いアプリに最適
 
@@ -51,12 +53,14 @@ React Nativeは2015年にMetaによって導入され、JavaScriptとReactを使
 UIの更新とレンダリングを最適化する新しいレンダリングシステム。
 
 **特徴:**
+
 - 同期的なUI更新
 - React 18の並行レンダリング機能をサポート
 - ネイティブビューとの統合を改善
 - 60 FPSの安定した描画性能
 
 **改善点:**
+
 - UI更新時のフレームドロップが大幅に減少
 - スクロールやアニメーションの滑らかさが向上
 
@@ -65,12 +69,14 @@ UIの更新とレンダリングを最適化する新しいレンダリングシ
 ネイティブモジュールの遅延読み込みを可能にする新しいモジュールシステム。
 
 **特徴:**
+
 - 必要な時にのみモジュールを読み込み
 - 起動時間の短縮
 - メモリ使用量の削減
 - 型安全性の向上
 
 **パフォーマンス向上:**
+
 - 初期ロード時間が最大40%改善
 - メモリ使用量が20-30%削減
 
@@ -79,6 +85,7 @@ UIの更新とレンダリングを最適化する新しいレンダリングシ
 JavaScriptとネイティブコード間のインターフェースを自動生成するツール。
 
 **メリット:**
+
 - 型安全性の保証
 - ヒューマンエラーの削減
 - メンテナンスコストの低減
@@ -88,12 +95,14 @@ JavaScriptとネイティブコード間のインターフェースを自動生�
 React Native専用に最適化されたJavaScriptエンジン（2025年現在デフォルト）。
 
 **特徴:**
+
 - Ahead-of-Time (AOT)コンパイル
 - 起動時間の最大30%短縮
 - メモリ使用量の最適化
 - バンドルサイズの削減
 
 **有効化方法（React Native 0.82では標準）:**
+
 ```javascript
 // android/app/build.gradle
 project.ext.react = [
@@ -190,11 +199,13 @@ MyApp/
 #### 1. 機能ベース vs タイプベース
 
 **機能ベース構造（推奨：大規模プロジェクト）**
+
 - 機能ごとにファイルをグループ化
 - モジュールの独立性が高い
 - チーム開発に適している
 
 **タイプベース構造（推奨：小規模プロジェクト）**
+
 - ファイルタイプごとにグループ化（components、screens、utils等）
 - シンプルで理解しやすい
 - 小規模プロジェクトの初期段階に最適
@@ -213,11 +224,13 @@ components/
 ```
 
 **メリット:**
+
 - コンポーネントの再利用性が向上
 - 一貫性のあるデザインシステムの構築
 - チーム間でのコンポーネント理解が容易
 
 **注意点:**
+
 - チーム全体がAtomic Designを理解している必要がある
 - 分類の判断が難しい場合がある
 
@@ -225,24 +238,24 @@ components/
 
 ```typescript
 // コンポーネント: PascalCase
-UserProfile.tsx
-LoginButton.tsx
+UserProfile.tsx;
+LoginButton.tsx;
 
 // フック: camelCase with 'use' prefix
-useAuth.ts
-useFetchData.ts
+useAuth.ts;
+useFetchData.ts;
 
 // ユーティリティ: camelCase
-formatDate.ts
-validateEmail.ts
+formatDate.ts;
+validateEmail.ts;
 
 // 定数: UPPER_SNAKE_CASE
-API_ENDPOINTS.ts
-COLOR_PALETTE.ts
+API_ENDPOINTS.ts;
+COLOR_PALETTE.ts;
 
 // 型定義: PascalCase with 'Type' or 'Interface' suffix
-UserType.ts
-ApiResponseInterface.ts
+UserType.ts;
+ApiResponseInterface.ts;
 ```
 
 ---
@@ -254,6 +267,7 @@ ApiResponseInterface.ts
 TypeScriptは型安全性を提供し、大規模プロジェクトのメンテナンス性を大幅に向上させます。
 
 **メリット:**
+
 - コンパイル時のエラー検出
 - IDEの強力な自動補完機能
 - リファクタリングの安全性向上
@@ -278,11 +292,7 @@ TypeScriptは型安全性を提供し、大規模プロジェクトのメンテ�
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js"
-  ]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
 }
 ```
 
@@ -327,6 +337,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
 クラスコンポーネントではなく、関数コンポーネントとHooksを使用します。
 
 **理由:**
+
 - シンプルで読みやすいコード
 - パフォーマンスの向上
 - Hooksの活用が可能
@@ -480,9 +491,9 @@ export const UserListContainer: React.FC = () => {
     <FlatList
       data={users}
       renderItem={({ item }) => (
-        <UserCard 
-          user={item} 
-          onPress={() => handleUserPress(item.id)} 
+        <UserCard
+          user={item}
+          onPress={() => handleUserPress(item.id)}
         />
       )}
       keyExtractor={(item) => item.id}
@@ -666,7 +677,7 @@ interface ItemProps {
 // メモ化により、propsが変更されない限り再レンダリングされない
 export const Item = memo<ItemProps>(({ title, description }) => {
   console.log('Item rendered');
-  
+
   return (
     <View>
       <Text>{title}</Text>
@@ -709,7 +720,7 @@ const UserList = () => {
 
   // 計算結果のメモ化
   const filteredUsers = useMemo(() => {
-    return users.filter(user => 
+    return users.filter(user =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [users, searchTerm]);
@@ -727,8 +738,8 @@ const UserList = () => {
     <FlatList
       data={filteredUsers}
       renderItem={({ item }) => (
-        <UserCard 
-          user={item} 
+        <UserCard
+          user={item}
           onPress={handleUserPress}
         />
       )}
@@ -776,7 +787,7 @@ const OptimizedList: React.FC<{ data: Item[] }> = ({ data }) => {
       data={data}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      
+
       // パフォーマンス最適化設定
       getItemLayout={getItemLayout}
       removeClippedSubviews={true}
@@ -784,7 +795,7 @@ const OptimizedList: React.FC<{ data: Item[] }> = ({ data }) => {
       updateCellsBatchingPeriod={50}
       initialNumToRender={10}
       windowSize={21}
-      
+
       // メモリ使用量の削減
       onEndReachedThreshold={0.5}
     />
@@ -836,7 +847,7 @@ const OptimizedImage = ({ uri }: { uri: string }) => {
 // 画像のリサイズとキャッシュ
 const ProfileAvatar = ({ userId }: { userId: string }) => {
   const imageUrl = `https://api.example.com/users/${userId}/avatar?size=100`;
-  
+
   return (
     <FastImage
       source={{
@@ -979,7 +990,7 @@ import { InteractionManager } from 'react-native';
 // 重い処理をアニメーション後に実行
 const handleNavigation = () => {
   navigation.navigate('NextScreen');
-  
+
   InteractionManager.runAfterInteractions(() => {
     // アニメーション完了後に実行される重い処理
     loadHeavyData();
@@ -995,11 +1006,11 @@ const handleNavigation = () => {
 
 プロジェクトの規模に応じて適切な状態管理ソリューションを選択します。
 
-| 規模 | 推奨ツール | 理由 |
-|------|-----------|------|
+| 規模   | 推奨ツール             | 理由                       |
+| ------ | ---------------------- | -------------------------- |
 | 小規模 | Context API + useState | シンプル、学習コストが低い |
-| 中規模 | Zustand / Recoil | 軽量、パフォーマンス良好 |
-| 大規模 | Redux Toolkit | 成熟、デバッグツール充実 |
+| 中規模 | Zustand / Recoil       | 軽量、パフォーマンス良好   |
+| 大規模 | Redux Toolkit          | 成熟、デバッグツール充実   |
 
 ### 2. Redux Toolkitの実装例
 
@@ -1147,7 +1158,7 @@ interface UserStore {
   currentUser: User | null;
   loading: boolean;
   error: string | null;
-  
+
   fetchUsers: () => Promise<void>;
   setCurrentUser: (user: User) => void;
   clearError: () => void;
@@ -1196,7 +1207,7 @@ const UserListScreen = () => {
 const FormComponent = () => {
   const [inputValue, setInputValue] = useState('');
   const [isValid, setIsValid] = useState(false);
-  
+
   // フォームの状態はこのコンポーネント内のみで使用
 };
 
@@ -1218,15 +1229,15 @@ import { RootState } from '@/store/store';
 // メモ化されたセレクター
 export const selectActiveUsers = createSelector(
   [(state: RootState) => state.users.users],
-  (users) => users.filter(user => user.status === 'active')
+  (users) => users.filter((user) => user.status === 'active')
 );
 
 export const selectUserStats = createSelector(
   [(state: RootState) => state.users.users],
   (users) => ({
     total: users.length,
-    active: users.filter(u => u.status === 'active').length,
-    inactive: users.filter(u => u.status === 'inactive').length,
+    active: users.filter((u) => u.status === 'active').length,
+    inactive: users.filter((u) => u.status === 'inactive').length,
   })
 );
 
@@ -1234,7 +1245,7 @@ export const selectUserStats = createSelector(
 const Dashboard = () => {
   const activeUsers = useSelector(selectActiveUsers);
   const stats = useSelector(selectUserStats);
-  
+
   // usersが変更されない限り、再計算されない
 };
 ```
@@ -1269,14 +1280,8 @@ npm install --save-dev @testing-library/react-native @testing-library/jest-nativ
 module.exports = {
   preset: 'react-native',
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation)/)',
-  ],
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.stories.tsx',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(react-native|@react-native|@react-navigation)/)'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/**/*.stories.tsx'],
 };
 ```
 
@@ -1297,7 +1302,7 @@ describe('Button Component', () => {
   it('calls onPress when pressed', () => {
     const onPressMock = jest.fn();
     const { getByText } = render(<Button title="Click me" onPress={onPressMock} />);
-    
+
     fireEvent.press(getByText('Click me'));
     expect(onPressMock).toHaveBeenCalledTimes(1);
   });
@@ -1307,7 +1312,7 @@ describe('Button Component', () => {
     const { getByText } = render(
       <Button title="Click me" onPress={onPressMock} disabled />
     );
-    
+
     const button = getByText('Click me').parent;
     expect(button).toBeDisabled();
   });
@@ -1316,7 +1321,7 @@ describe('Button Component', () => {
     const { getByTestId } = render(
       <Button title="Click me" onPress={() => {}} loading />
     );
-    
+
     expect(getByTestId('loading-indicator')).toBeTruthy();
   });
 });
@@ -1345,7 +1350,7 @@ describe('useAuth Hook', () => {
 
     expect(result.current.loading).toBe(true);
     await waitForNextUpdate();
-    
+
     expect(result.current.user).toEqual(mockUser);
     expect(result.current.loading).toBe(false);
   });
@@ -1432,10 +1437,7 @@ describe('User Service', () => {
 ```typescript
 // __tests__/store/userSlice.test.ts
 import { configureStore } from '@reduxjs/toolkit';
-import userReducer, { 
-  fetchUsers, 
-  setCurrentUser 
-} from '@/store/slices/userSlice';
+import userReducer, { fetchUsers, setCurrentUser } from '@/store/slices/userSlice';
 import { api } from '@/services/api';
 
 jest.mock('@/services/api');
@@ -1453,23 +1455,21 @@ describe('User Slice', () => {
 
   it('handles setCurrentUser', () => {
     const user = { id: '1', name: 'John', email: 'john@example.com' };
-    
+
     store.dispatch(setCurrentUser(user));
-    
+
     expect(store.getState().users.currentUser).toEqual(user);
   });
 
   it('handles fetchUsers pending state', () => {
     store.dispatch(fetchUsers.pending('', undefined));
-    
+
     expect(store.getState().users.loading).toBe(true);
     expect(store.getState().users.error).toBeNull();
   });
 
   it('handles fetchUsers fulfilled state', async () => {
-    const mockUsers = [
-      { id: '1', name: 'John', email: 'john@example.com' },
-    ];
+    const mockUsers = [{ id: '1', name: 'John', email: 'john@example.com' }];
 
     (api.get as jest.Mock).mockResolvedValue({ data: mockUsers });
 
@@ -1533,7 +1533,7 @@ describe('Login Flow', () => {
     await element(by.id('email-input')).typeText('user@example.com');
     await element(by.id('password-input')).typeText('password123');
     await element(by.id('login-button')).tap();
-    
+
     await expect(element(by.id('home-screen'))).toBeVisible();
   });
 
@@ -1541,7 +1541,7 @@ describe('Login Flow', () => {
     await element(by.id('email-input')).typeText('invalid@example.com');
     await element(by.id('password-input')).typeText('wrong');
     await element(by.id('login-button')).tap();
-    
+
     await expect(element(by.text('Invalid credentials'))).toBeVisible();
   });
 });
@@ -1555,7 +1555,7 @@ describe('UserProfile', () => {
   it('displays user name and email', () => {
     const user = { name: 'John', email: 'john@example.com' };
     const { getByText } = render(<UserProfile user={user} />);
-    
+
     expect(getByText('John')).toBeTruthy();
     expect(getByText('john@example.com')).toBeTruthy();
   });
@@ -1705,9 +1705,7 @@ interface NativeProps extends ViewProps {
   opacity?: number;
 }
 
-export default codegenNativeComponent<NativeProps>(
-  'MyComponent'
-) as HostComponent<NativeProps>;
+export default codegenNativeComponent<NativeProps>('MyComponent') as HostComponent<NativeProps>;
 ```
 
 ### 4. 移行時の一般的な問題と解決策
@@ -1721,8 +1719,8 @@ New Architectureでは状態更新が同期的にバッチ処理されます。
 const [count, setCount] = useState(0);
 
 const increment = () => {
-  setCount(prev => prev + 1); // 前の状態に基づいて更新
-  setCount(prev => prev + 1);
+  setCount((prev) => prev + 1); // 前の状態に基づいて更新
+  setCount((prev) => prev + 1);
   // 最終的に count は 2 増える
 };
 
@@ -1943,16 +1941,16 @@ export const AppNavigator = () => {
           },
         }}
       >
-        <Stack.Screen 
-          name="Home" 
+        <Stack.Screen
+          name="Home"
           component={HomeScreen}
           options={{ title: 'ホーム' }}
         />
-        <Stack.Screen 
-          name="Profile" 
+        <Stack.Screen
+          name="Profile"
           component={ProfileScreen}
-          options={({ route }) => ({ 
-            title: `${route.params.userId}のプロフィール` 
+          options={({ route }) => ({
+            title: `${route.params.userId}のプロフィール`
           })}
         />
       </Stack.Navigator>
@@ -2038,7 +2036,7 @@ const HomeScreen = () => {
       <Text>{t('welcome')}</Text>
       <Text>{t('greeting', { name: 'John' })}</Text>
       <Button title={t('button.submit')} onPress={() => {}} />
-      
+
       <Button
         title="Switch to English"
         onPress={() => i18n.changeLanguage('en')}
@@ -2280,89 +2278,89 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linter
-      run: npm run lint
-    
-    - name: Run tests
-      run: npm test -- --coverage
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test -- --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
 
   build-android:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build Android
-      run: |
-        cd android
-        ./gradlew assembleRelease
+      - uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Android
+        run: |
+          cd android
+          ./gradlew assembleRelease
 
   build-ios:
     runs-on: macos-latest
     needs: test
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Pods
-      run: |
-        cd ios
-        pod install
-    
-    - name: Build iOS
-      run: |
-        cd ios
-        xcodebuild -workspace MyApp.xcworkspace \
-          -scheme MyApp \
-          -configuration Release \
-          -sdk iphoneos \
-          build
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Pods
+        run: |
+          cd ios
+          pod install
+
+      - name: Build iOS
+        run: |
+          cd ios
+          xcodebuild -workspace MyApp.xcworkspace \
+            -scheme MyApp \
+            -configuration Release \
+            -sdk iphoneos \
+            build
 ```
 
 ---

@@ -105,11 +105,7 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
     return null;
   }
 
-  return (
-    <DatabaseContext.Provider value={{ db, isReady }}>
-      {children}
-    </DatabaseContext.Provider>
-  );
+  return <DatabaseContext.Provider value={{ db, isReady }}>{children}</DatabaseContext.Provider>;
 };
 
 // ============================================

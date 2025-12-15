@@ -6,11 +6,11 @@
  * 分: 0, 15, 30, 45
  */
 
-import React, { memo } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { HOURS, MINUTES } from "@/constants";
-import { colors, spacing, typography, borderRadius } from "@/theme";
+import React, { memo } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { HOURS, MINUTES } from '@/constants';
+import { colors, spacing, typography, borderRadius } from '@/theme';
 
 // ============================================
 // 型定義
@@ -61,17 +61,13 @@ export interface TimePickerFieldProps {
  * />
  */
 export const TimePickerField: React.FC<TimePickerFieldProps> = memo(
-  ({ hour, minute, onHourChange, onMinuteChange, label = "放送時刻 *" }) => {
+  ({ hour, minute, onHourChange, onMinuteChange, label = '放送時刻 *' }) => {
     return (
       <View style={styles.container}>
         {label && <Text style={styles.label}>{label}</Text>}
         <View style={styles.pickerContainer}>
           <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={hour}
-              onValueChange={onHourChange}
-              style={styles.picker}
-            >
+            <Picker selectedValue={hour} onValueChange={onHourChange} style={styles.picker}>
               {HOURS.map((h) => (
                 <Picker.Item key={h} label={`${h}`} value={h} />
               ))}
@@ -81,17 +77,9 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = memo(
           <Text style={styles.separator}>:</Text>
 
           <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={minute}
-              onValueChange={onMinuteChange}
-              style={styles.picker}
-            >
+            <Picker selectedValue={minute} onValueChange={onMinuteChange} style={styles.picker}>
               {MINUTES.map((m) => (
-                <Picker.Item
-                  key={m}
-                  label={m.toString().padStart(2, "0")}
-                  value={m}
-                />
+                <Picker.Item key={m} label={m.toString().padStart(2, '0')} value={m} />
               ))}
             </Picker>
           </View>
@@ -101,7 +89,7 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = memo(
   }
 );
 
-TimePickerField.displayName = "TimePickerField";
+TimePickerField.displayName = 'TimePickerField';
 
 // ============================================
 // スタイル
@@ -113,13 +101,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: typography.fontSize.body,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.text,
     marginBottom: spacing.sm,
   },
   pickerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.small,
     paddingHorizontal: spacing.md,
@@ -133,7 +121,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.text,
     marginHorizontal: spacing.sm,
   },

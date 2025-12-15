@@ -80,10 +80,7 @@ const RadioButtonGroupComponent = <T extends string | number>({
           return (
             <TouchableOpacity
               key={String(option.value)}
-              style={[
-                styles.option,
-                isSelected && styles.optionSelected,
-              ]}
+              style={[styles.option, isSelected && styles.optionSelected]}
               onPress={() => onChange(option.value)}
               activeOpacity={0.7}
               accessibilityRole="radio"
@@ -93,12 +90,7 @@ const RadioButtonGroupComponent = <T extends string | number>({
               <View style={styles.radioCircle}>
                 {isSelected && <View style={styles.radioCircleInner} />}
               </View>
-              <Text
-                style={[
-                  styles.optionText,
-                  isSelected && styles.optionTextSelected,
-                ]}
-              >
+              <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
                 {option.label}
               </Text>
             </TouchableOpacity>
@@ -109,7 +101,9 @@ const RadioButtonGroupComponent = <T extends string | number>({
   );
 };
 
-export const RadioButtonGroup = memo(RadioButtonGroupComponent) as typeof RadioButtonGroupComponent & {
+export const RadioButtonGroup = memo(
+  RadioButtonGroupComponent
+) as typeof RadioButtonGroupComponent & {
   displayName: string;
 };
 

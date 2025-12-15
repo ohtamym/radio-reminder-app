@@ -62,10 +62,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = memo(
           <View style={styles.buttons}>
             {status === 'unlistened' && (
               <>
-                <Button
-                  variant="secondary"
-                  onPress={() => onStatusChange('listening')}
-                >
+                <Button variant="secondary" onPress={() => onStatusChange('listening')}>
                   聴取中へ
                 </Button>
                 <Button variant="primary" onPress={() => onStatusChange('completed')}>
@@ -75,10 +72,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = memo(
             )}
             {status === 'listening' && (
               <>
-                <Button
-                  variant="secondary"
-                  onPress={() => onStatusChange('unlistened')}
-                >
+                <Button variant="secondary" onPress={() => onStatusChange('unlistened')}>
                   未聴取へ
                 </Button>
                 <Button variant="primary" onPress={() => onStatusChange('completed')}>

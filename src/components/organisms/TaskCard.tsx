@@ -52,10 +52,7 @@ export interface TaskCardProps {
  * @param nextProps - 次のprops
  * @returns propsが等しい場合はtrue
  */
-const arePropsEqual = (
-  prevProps: TaskCardProps,
-  nextProps: TaskCardProps
-): boolean => {
+const arePropsEqual = (prevProps: TaskCardProps, nextProps: TaskCardProps): boolean => {
   return (
     prevProps.task.id === nextProps.task.id &&
     prevProps.task.status === nextProps.task.status &&
@@ -129,32 +126,20 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) =>
       <View style={[styles.actions, { opacity: contentOpacity }]}>
         {task.status === 'unlistened' && (
           <>
-            <Button
-              variant="secondary"
-              onPress={() => onStatusChange('listening')}
-            >
+            <Button variant="secondary" onPress={() => onStatusChange('listening')}>
               聴取中へ
             </Button>
-            <Button
-              variant="primary"
-              onPress={() => onStatusChange('completed')}
-            >
+            <Button variant="primary" onPress={() => onStatusChange('completed')}>
               完了
             </Button>
           </>
         )}
         {task.status === 'listening' && (
           <>
-            <Button
-              variant="secondary"
-              onPress={() => onStatusChange('unlistened')}
-            >
+            <Button variant="secondary" onPress={() => onStatusChange('unlistened')}>
               未聴取へ
             </Button>
-            <Button
-              variant="primary"
-              onPress={() => onStatusChange('completed')}
-            >
+            <Button variant="primary" onPress={() => onStatusChange('completed')}>
               完了
             </Button>
           </>

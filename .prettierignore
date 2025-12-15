@@ -1,0 +1,17 @@
+# 依存関係
+node_modules/
+package-lock.json
+
+# ビルド成果物
+.expo/
+dist/
+build/
+*.log
+
+# テスト関連
+coverage/
+**/__snapshots__/
+
+# 設定ファイル
+.git/
+.vscode/

@@ -7,17 +7,12 @@
  * - 初期画面の設定
  */
 
-import React from "react";
-import { TouchableOpacity, Text } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {
-  TaskListScreen,
-  ProgramFormScreen,
-  TaskDetailScreen,
-  HistoryScreen,
-} from "@/screens";
-import { RootStackParamList } from "./types";
-import { theme } from "@/theme";
+import React from 'react';
+import { TouchableOpacity, Text } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TaskListScreen, ProgramFormScreen, TaskDetailScreen, HistoryScreen } from '@/screens';
+import { RootStackParamList } from './types';
+import { theme } from '@/theme';
 
 // ============================================
 // ナビゲーター作成
@@ -51,7 +46,7 @@ export const AppNavigator: React.FC = () => {
         },
         headerTintColor: theme.colors.textWhite,
         headerTitleStyle: {
-          fontWeight: "bold",
+          fontWeight: 'bold',
         },
         contentStyle: { backgroundColor: theme.colors.background },
       }}
@@ -61,16 +56,14 @@ export const AppNavigator: React.FC = () => {
         name="TaskList"
         component={TaskListScreen}
         options={({ navigation }) => ({
-          title: "ラジオリマインダー",
+          title: 'ラジオリマインダー',
           headerLeft: () => null, // 戻るボタンを非表示（ルート画面）
           headerRight: () => (
             <TouchableOpacity
-              onPress={() => navigation.navigate("ProgramForm")}
+              onPress={() => navigation.navigate('ProgramForm')}
               style={{ paddingHorizontal: 16 }}
             >
-              <Text style={{ color: theme.colors.textWhite, fontSize: 28 }}>
-                +
-              </Text>
+              <Text style={{ color: theme.colors.textWhite, fontSize: 28 }}>+</Text>
             </TouchableOpacity>
           ),
         })}
@@ -82,7 +75,7 @@ export const AppNavigator: React.FC = () => {
         component={ProgramFormScreen}
         options={({ route }) => ({
           // パラメータに応じてタイトルを変更
-          title: route.params?.programId ? "番組編集" : "番組登録",
+          title: route.params?.programId ? '番組編集' : '番組登録',
         })}
       />
 
@@ -91,7 +84,7 @@ export const AppNavigator: React.FC = () => {
         name="TaskDetail"
         component={TaskDetailScreen}
         options={{
-          title: "タスク詳細",
+          title: 'タスク詳細',
         }}
       />
 
@@ -100,7 +93,7 @@ export const AppNavigator: React.FC = () => {
         name="History"
         component={HistoryScreen}
         options={{
-          title: "聴取履歴",
+          title: '聴取履歴',
         }}
       />
     </Stack.Navigator>

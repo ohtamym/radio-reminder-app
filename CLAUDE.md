@@ -130,16 +130,16 @@ Uses **expo-sqlite** with two main tables:
 
 ```typescript
 // Always use dayjs with timezone plugin
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Tokyo");
+dayjs.tz.setDefault('Asia/Tokyo');
 
 // Handle 29-hour format (overnight broadcasts)
 const hour = 25; // 1:00 AM next day
 const actualHour = hour >= 24 ? hour - 24 : hour;
 const date = dayjs().hour(actualHour);
-if (hour >= 24) date.add(1, "day");
+if (hour >= 24) date.add(1, 'day');
 ```
 
 ### Performance Optimization
@@ -152,7 +152,7 @@ if (hour >= 24) date.add(1, "day");
 
 ```typescript
 // Use custom AppError class
-import { AppError, handleError } from "@/utils/errorHandler";
+import { AppError, handleError } from '@/utils/errorHandler';
 
 try {
   // database operation

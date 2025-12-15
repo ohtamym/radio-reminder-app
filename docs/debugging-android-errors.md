@@ -7,6 +7,7 @@
 アプリ内でエラーが発生した場合、ErrorBoundaryがエラーをキャッチし、画面に表示します。
 
 **使い方:**
+
 1. エラーが発生すると、エラー画面が表示されます
 2. 「詳細を表示」ボタンをタップすると、エラーの詳細情報が表示されます
 3. スタックトレースやコンポーネントスタックを確認できます
@@ -16,6 +17,7 @@
 Android Logcatは、Androidデバイスやエミュレーターのログをリアルタイムで確認できるツールです。
 
 #### 必要なもの
+
 - Android SDK Platform Tools（`adb`コマンド）
 - USBデバッグが有効なAndroidデバイス、またはAndroidエミュレーター
 
@@ -113,9 +115,7 @@ Expo Dev Toolsのブラウザ画面でもログを確認できます。
 import { LogBox } from 'react-native';
 
 // 特定の警告を無視する場合
-LogBox.ignoreLogs([
-  'Warning: ...',
-]);
+LogBox.ignoreLogs(['Warning: ...']);
 
 // LogBoxを有効にする（デフォルトで有効）
 LogBox.ignoreAllLogs(false);
@@ -128,11 +128,13 @@ LogBox.ignoreAllLogs(false);
 このエラーは、Androidのネイティブモジュールで型の不一致が発生していることを示します。
 
 **確認すべきポイント:**
+
 1. `app.json`の設定値が正しい型か確認
 2. `react-native-screens`や`react-navigation`のバージョン互換性
 3. Expo SDKのバージョンと依存関係の互換性
 
 **対処法:**
+
 - `@react-navigation/stack`を`@react-navigation/native-stack`に変更（既に実施済み）
 - Expo SDKと依存関係のバージョンを確認
 - `npx expo install --fix`を実行して依存関係を修正
@@ -148,16 +150,19 @@ LogBox.ignoreAllLogs(false);
 ### 7. よくあるエラーパターン
 
 #### ネイティブモジュールのエラー
+
 - **症状**: `java.lang.*`で始まるエラー
 - **原因**: ネイティブモジュールの設定や互換性の問題
 - **対処**: モジュールのバージョンを確認し、互換性のあるバージョンに更新
 
 #### JavaScriptエラー
+
 - **症状**: `Error: ...`で始まるエラー
 - **原因**: JavaScriptコードの問題
 - **対処**: ErrorBoundaryの詳細を確認し、スタックトレースから原因を特定
 
 #### ネットワークエラー
+
 - **症状**: `Network request failed`
 - **原因**: ネットワーク接続の問題
 - **対処**: デバイスのネットワーク設定を確認
@@ -191,4 +196,3 @@ adb logcat --pid=$(adb shell pidof -s host.exp.exponent)
 - [Android Logcat公式ドキュメント](https://developer.android.com/studio/command-line/logcat)
 - [React Native Debugging](https://reactnative.dev/docs/debugging)
 - [Expo Debugging](https://docs.expo.dev/workflow/debugging/)
-

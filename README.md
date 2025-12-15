@@ -156,6 +156,7 @@ src/
 ### データベース設計
 
 #### programsテーブル
+
 ```sql
 id              INTEGER PRIMARY KEY
 station_name    TEXT NOT NULL
@@ -167,6 +168,7 @@ repeat_type     TEXT ('none', 'weekly')
 ```
 
 #### tasksテーブル
+
 ```sql
 id                 INTEGER PRIMARY KEY
 program_id         INTEGER (FK)
@@ -179,15 +181,18 @@ completed_at       TEXT
 ### 重要な仕様
 
 #### 期限計算
+
 - 聴取期限 = 放送日時 + 8日後の5:00
 - radikoのタイムフリー期限（放送後7日 + 29時間）に対応
 
 #### タスク自動生成
+
 - **単発番組**: 次回放送日時のタスクを1件生成
 - **毎週番組（初回）**: 前回（1週間前）放送日時のタスクを生成
 - **毎週番組（以降）**: 前回タスク完了時または期限切れ時に次回タスクを自動生成
 
 #### 通知タイミング
+
 - 期限の1日前18時に自動通知
 - 過去の日時の場合は通知をスケジュールしない
 - タスク削除・完了時に通知を自動キャンセル
@@ -198,6 +203,16 @@ completed_at       TEXT
 
 ```bash
 npx tsc --noEmit
+```
+
+### コードフォーマット
+
+```bash
+# 全ファイルをフォーマット
+npm run format
+
+# フォーマットチェックのみ（変更しない）
+npm run format:check
 ```
 
 ### テスト実行
@@ -240,16 +255,19 @@ npm run test:coverage
 ### 重要な注意事項
 
 #### 日時フォーマット
+
 - **SQLite標準形式を使用**: `YYYY-MM-DD HH:mm:ss`
 - ISO8601形式（T区切り）は使用しない
 - タイムゾーン: Asia/Tokyo固定
 
 #### データベース操作
+
 - トランザクションで複数操作をラップ
 - パラメータ化クエリを必ず使用
 - エラー発生時は適切な例外を投げる
 
 #### パフォーマンス最適化
+
 - `React.memo`でコンポーネントをメモ化
 - `useMemo`でソート済みリストをメモ化
 - `useCallback`でイベントハンドラをメモ化

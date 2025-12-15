@@ -49,17 +49,15 @@ export interface EmptyStateProps {
  *   message="すべてのタスクが完了しました"
  * />
  */
-export const EmptyState: React.FC<EmptyStateProps> = memo(
-  ({ icon, message, subMessage }) => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.icon}>{icon}</Text>
-        <Text style={styles.message}>{message}</Text>
-        {subMessage && <Text style={styles.subMessage}>{subMessage}</Text>}
-      </View>
-    );
-  }
-);
+export const EmptyState: React.FC<EmptyStateProps> = memo(({ icon, message, subMessage }) => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.icon}>{icon}</Text>
+      <Text style={styles.message}>{message}</Text>
+      {subMessage && <Text style={styles.subMessage}>{subMessage}</Text>}
+    </View>
+  );
+});
 
 EmptyState.displayName = 'EmptyState';
 

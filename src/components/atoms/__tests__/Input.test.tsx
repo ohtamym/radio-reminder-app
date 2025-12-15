@@ -19,17 +19,13 @@ describe('Input', () => {
   // ============================================
 
   it('デフォルトプロパティでレンダリングできる', () => {
-    const { getByPlaceholderText } = render(
-      <Input placeholder="入力してください" />
-    );
+    const { getByPlaceholderText } = render(<Input placeholder="入力してください" />);
 
     expect(getByPlaceholderText('入力してください')).toBeTruthy();
   });
 
   it('プレースホルダーが表示される', () => {
-    const { getByPlaceholderText } = render(
-      <Input placeholder="例: TBSラジオ" />
-    );
+    const { getByPlaceholderText } = render(<Input placeholder="例: TBSラジオ" />);
 
     expect(getByPlaceholderText('例: TBSラジオ')).toBeTruthy();
   });
@@ -39,17 +35,13 @@ describe('Input', () => {
   // ============================================
 
   it('ラベルが表示される', () => {
-    const { getByText } = render(
-      <Input label="放送局名" placeholder="入力" />
-    );
+    const { getByText } = render(<Input label="放送局名" placeholder="入力" />);
 
     expect(getByText('放送局名')).toBeTruthy();
   });
 
   it('ラベルなしでレンダリングできる', () => {
-    const { getByPlaceholderText } = render(
-      <Input placeholder="入力" />
-    );
+    const { getByPlaceholderText } = render(<Input placeholder="入力" />);
 
     expect(getByPlaceholderText('入力')).toBeTruthy();
   });
@@ -60,11 +52,7 @@ describe('Input', () => {
 
   it('エラーメッセージが表示される', () => {
     const { getByText } = render(
-      <Input
-        label="番組名"
-        placeholder="入力"
-        error="番組名は必須です"
-      />
+      <Input label="番組名" placeholder="入力" error="番組名は必須です" />
     );
 
     expect(getByText('番組名は必須です')).toBeTruthy();
@@ -81,11 +69,7 @@ describe('Input', () => {
 
   it('エラーがある場合、ラベルとエラーの両方が表示される', () => {
     const { getByText } = render(
-      <Input
-        label="放送局名"
-        placeholder="入力"
-        error="必須項目です"
-      />
+      <Input label="放送局名" placeholder="入力" error="必須項目です" />
     );
 
     expect(getByText('放送局名')).toBeTruthy();
@@ -99,10 +83,7 @@ describe('Input', () => {
   it('onChangeTextが呼ばれる', () => {
     const handleChange = jest.fn();
     const { getByPlaceholderText } = render(
-      <Input
-        placeholder="入力してください"
-        onChangeText={handleChange}
-      />
+      <Input placeholder="入力してください" onChangeText={handleChange} />
     );
 
     const input = getByPlaceholderText('入力してください');
@@ -115,10 +96,7 @@ describe('Input', () => {
   it('複数回入力するとonChangeTextが複数回呼ばれる', () => {
     const handleChange = jest.fn();
     const { getByPlaceholderText } = render(
-      <Input
-        placeholder="入力"
-        onChangeText={handleChange}
-      />
+      <Input placeholder="入力" onChangeText={handleChange} />
     );
 
     const input = getByPlaceholderText('入力');
@@ -133,12 +111,7 @@ describe('Input', () => {
   });
 
   it('valueプロパティが反映される', () => {
-    const { getByDisplayValue } = render(
-      <Input
-        placeholder="入力"
-        value="TBSラジオ"
-      />
-    );
+    const { getByDisplayValue } = render(<Input placeholder="入力" value="TBSラジオ" />);
 
     expect(getByDisplayValue('TBSラジオ')).toBeTruthy();
   });
@@ -172,22 +145,13 @@ describe('Input', () => {
 
   it('エラー状態から正常状態に変更できる', () => {
     const { rerender, getByText, queryByText, getByPlaceholderText } = render(
-      <Input
-        label="番組名"
-        placeholder="入力"
-        error="エラーがあります"
-      />
+      <Input label="番組名" placeholder="入力" error="エラーがあります" />
     );
 
     expect(getByText('エラーがあります')).toBeTruthy();
 
     // エラーを解除
-    rerender(
-      <Input
-        label="番組名"
-        placeholder="入力"
-      />
-    );
+    rerender(<Input label="番組名" placeholder="入力" />);
 
     expect(queryByText('エラーがあります')).toBeNull();
     expect(getByPlaceholderText('入力')).toBeTruthy();
@@ -198,19 +162,13 @@ describe('Input', () => {
   // ============================================
 
   it('基本的なInputのスナップショットが一致する', () => {
-    const { toJSON } = render(
-      <Input label="ラベル" placeholder="プレースホルダー" />
-    );
+    const { toJSON } = render(<Input label="ラベル" placeholder="プレースホルダー" />);
     expect(toJSON()).toMatchSnapshot();
   });
 
   it('エラー付きInputのスナップショットが一致する', () => {
     const { toJSON } = render(
-      <Input
-        label="ラベル"
-        placeholder="プレースホルダー"
-        error="エラーメッセージ"
-      />
+      <Input label="ラベル" placeholder="プレースホルダー" error="エラーメッセージ" />
     );
     expect(toJSON()).toMatchSnapshot();
   });

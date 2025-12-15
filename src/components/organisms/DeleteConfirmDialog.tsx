@@ -122,9 +122,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
       <View style={styles.overlay}>
         <View style={styles.dialog}>
           <Text style={styles.title}>削除方法を選択</Text>
-          <Text style={styles.message}>
-            この番組のタスクは{'\n'}繰り返し設定されています
-          </Text>
+          <Text style={styles.message}>この番組のタスクは{'\n'}繰り返し設定されています</Text>
 
           {/* 削除方法の選択肢 */}
           <View style={styles.options}>

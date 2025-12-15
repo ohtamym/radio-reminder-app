@@ -45,16 +45,14 @@ export interface LoadingSpinnerProps {
  * // 小サイズ
  * <LoadingSpinner size="small" />
  */
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = memo(
-  ({ message, size = 'large' }) => {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size={size} color={colors.primary} />
-        {message && <Text style={styles.message}>{message}</Text>}
-      </View>
-    );
-  }
-);
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = memo(({ message, size = 'large' }) => {
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size={size} color={colors.primary} />
+      {message && <Text style={styles.message}>{message}</Text>}
+    </View>
+  );
+});
 
 LoadingSpinner.displayName = 'LoadingSpinner';
 

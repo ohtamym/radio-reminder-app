@@ -33,44 +33,44 @@ src/
 
 ### 2.1 Atoms（原子コンポーネント）
 
-| コンポーネント名 | 説明 | Props |
-|----------------|------|-------|
-| Button | 汎用ボタン | title, onPress, variant, disabled |
-| Text | 汎用テキスト | children, variant, color |
-| Icon | アイコン表示 | name, size, color |
-| Badge | ステータスバッジ | status, label |
-| Input | テキスト入力 | value, onChangeText, placeholder, error |
+| コンポーネント名 | 説明             | Props                                   |
+| ---------------- | ---------------- | --------------------------------------- |
+| Button           | 汎用ボタン       | title, onPress, variant, disabled       |
+| Text             | 汎用テキスト     | children, variant, color                |
+| Icon             | アイコン表示     | name, size, color                       |
+| Badge            | ステータスバッジ | status, label                           |
+| Input            | テキスト入力     | value, onChangeText, placeholder, error |
 
 ### 2.2 Molecules（分子コンポーネント）
 
-| コンポーネント名 | 説明 | 主な用途 |
-|----------------|------|---------|
-| StatusIndicator | ステータス表示 | タスクの状態を視覚化 |
-| DeadlineInfo | 期限情報表示 | 残り時間の表示 |
-| ProgramInfo | 番組情報表示 | 放送局名と番組名 |
-| TimePickerField | 時刻選択フィールド | 時・分の入力 |
-| RadioButtonGroup | ラジオボタングループ | 繰り返し設定の選択 |
-| EmptyState | 空状態表示 | データなし時の表示 |
-| LoadingSpinner | ローディング表示 | データ読み込み中の表示 |
+| コンポーネント名 | 説明                 | 主な用途               |
+| ---------------- | -------------------- | ---------------------- |
+| StatusIndicator  | ステータス表示       | タスクの状態を視覚化   |
+| DeadlineInfo     | 期限情報表示         | 残り時間の表示         |
+| ProgramInfo      | 番組情報表示         | 放送局名と番組名       |
+| TimePickerField  | 時刻選択フィールド   | 時・分の入力           |
+| RadioButtonGroup | ラジオボタングループ | 繰り返し設定の選択     |
+| EmptyState       | 空状態表示           | データなし時の表示     |
+| LoadingSpinner   | ローディング表示     | データ読み込み中の表示 |
 
 ### 2.3 Organisms（有機体コンポーネント）
 
-| コンポーネント名 | 説明 | 主な用途 |
-|----------------|------|---------|
-| TaskCard | タスクカード | タスク一覧の各アイテム |
-| TaskDetailView | タスク詳細表示 | タスクの詳細情報 |
-| ProgramForm | 番組登録/編集フォーム | 番組情報の入力 |
-| DeleteConfirmDialog | 削除確認ダイアログ | 削除方法の選択 |
-| HistoryCard | 履歴カード | 履歴一覧の各アイテム |
+| コンポーネント名    | 説明                  | 主な用途               |
+| ------------------- | --------------------- | ---------------------- |
+| TaskCard            | タスクカード          | タスク一覧の各アイテム |
+| TaskDetailView      | タスク詳細表示        | タスクの詳細情報       |
+| ProgramForm         | 番組登録/編集フォーム | 番組情報の入力         |
+| DeleteConfirmDialog | 削除確認ダイアログ    | 削除方法の選択         |
+| HistoryCard         | 履歴カード            | 履歴一覧の各アイテム   |
 
 ### 2.4 Screens（画面コンポーネント）
 
-| コンポーネント名 | 説明 |
-|----------------|------|
-| TaskListScreen | タスク一覧画面 |
+| コンポーネント名  | 説明              |
+| ----------------- | ----------------- |
+| TaskListScreen    | タスク一覧画面    |
 | ProgramFormScreen | 番組登録/編集画面 |
-| TaskDetailScreen | タスク詳細画面 |
-| HistoryScreen | 履歴画面 |
+| TaskDetailScreen  | タスク詳細画面    |
+| HistoryScreen     | 履歴画面          |
 
 ---
 
@@ -83,6 +83,7 @@ src/
 **責務**: 汎用的なボタンコンポーネント
 
 **Props**
+
 ```typescript
 interface ButtonProps {
   title: string;
@@ -94,6 +95,7 @@ interface ButtonProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/atoms/Button.tsx
 import React from 'react';
@@ -177,6 +179,7 @@ const styles = StyleSheet.create({
 **責務**: ステータスバッジの表示
 
 **Props**
+
 ```typescript
 interface BadgeProps {
   status: 'unlistened' | 'listening' | 'completed';
@@ -185,6 +188,7 @@ interface BadgeProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/atoms/Badge.tsx
 import React, { memo } from 'react';
@@ -194,7 +198,7 @@ import { theme } from '@/theme';
 
 export const Badge: React.FC<BadgeProps> = memo(({ status, label }) => {
   const config = STATUS_CONFIG[status];
-  
+
   return (
     <View style={[styles.badge, { backgroundColor: config.color + '20' }]}>
       <Text style={styles.emoji}>{config.emoji}</Text>
@@ -235,6 +239,7 @@ const styles = StyleSheet.create({
 **責務**: タスクのステータスを視覚的に表示
 
 **Props**
+
 ```typescript
 interface StatusIndicatorProps {
   status: TaskStatus;
@@ -244,6 +249,7 @@ interface StatusIndicatorProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/molecules/StatusIndicator.tsx
 import React from 'react';
@@ -260,7 +266,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   return (
     <View style={styles.container}>
       <Badge status={status} />
-      
+
       {showButtons && onStatusChange && (
         <View style={styles.buttons}>
           {status === 'unlistened' && (
@@ -315,6 +321,7 @@ const styles = StyleSheet.create({
 **責務**: 期限情報と残り時間を表示
 
 **Props**
+
 ```typescript
 interface DeadlineInfoProps {
   deadline: string; // YYYY-MM-DD HH:mm:ss形式
@@ -323,6 +330,7 @@ interface DeadlineInfoProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/molecules/DeadlineInfo.tsx
 import React from 'react';
@@ -335,7 +343,7 @@ export const DeadlineInfo: React.FC<DeadlineInfoProps> = ({
 }) => {
   const remainingDays = calculateRemainingDays(deadline);
   const color = getRemainingDaysColor(remainingDays);
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -344,7 +352,7 @@ export const DeadlineInfo: React.FC<DeadlineInfoProps> = ({
           {formatDate(broadcastDatetime, 'YYYY/MM/DD(ddd) HH:mm')}
         </Text>
       </View>
-      
+
       <View style={styles.row}>
         <Text style={styles.label}>視聴期限</Text>
         <View>
@@ -394,6 +402,7 @@ const styles = StyleSheet.create({
 **責務**: データ読み込み中のローディング表示
 
 **Props**
+
 ```typescript
 interface LoadingSpinnerProps {
   message?: string;
@@ -402,13 +411,14 @@ interface LoadingSpinnerProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/molecules/LoadingSpinner.tsx
 import React, { memo } from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { theme } from '@/theme';
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = memo(({ 
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = memo(({
   message,
   size = 'large',
 }) => {
@@ -445,6 +455,7 @@ const styles = StyleSheet.create({
 **責務**: 時刻入力フィールド（時・分）
 
 **Props**
+
 ```typescript
 interface TimePickerFieldProps {
   hour: number;
@@ -455,6 +466,7 @@ interface TimePickerFieldProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/molecules/TimePickerField.tsx
 import React, { memo } from 'react';
@@ -484,9 +496,9 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = memo(({
             ))}
           </Picker>
         </View>
-        
+
         <Text style={styles.separator}>:</Text>
-        
+
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={minute}
@@ -550,6 +562,7 @@ const styles = StyleSheet.create({
 **責務**: タスク一覧の各カード表示
 
 **Props**
+
 ```typescript
 interface TaskCardProps {
   task: TaskWithProgram;
@@ -559,6 +572,7 @@ interface TaskCardProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/organisms/TaskCard.tsx
 import React, { memo } from 'react';
@@ -588,7 +602,7 @@ export const TaskCard = memo<TaskCardProps>(({
 }) => {
   const remainingDays = calculateRemainingDays(task.deadline_datetime);
   const deadlineColor = getRemainingDaysColor(remainingDays);
-  
+
   return (
     <TouchableOpacity
       style={styles.card}
@@ -602,17 +616,17 @@ export const TaskCard = memo<TaskCardProps>(({
         </View>
         <Badge status={task.status} />
       </View>
-      
+
       <Text style={styles.programName}>{task.program_name}</Text>
-      
+
       <Text style={styles.datetime}>
         {formatDate(task.broadcast_datetime, 'MM/DD(ddd) HH:mm')}
       </Text>
-      
+
       <Text style={[styles.deadline, { color: deadlineColor }]}>
         期限: あと{remainingDays}日 ({formatDate(task.deadline_datetime, 'MM/DD HH:mm')})
       </Text>
-      
+
       <View style={styles.actions}>
         {task.status === 'unlistened' && (
           <>
@@ -709,6 +723,7 @@ const styles = StyleSheet.create({
 **責務**: 番組登録/編集フォーム
 
 **Props**
+
 ```typescript
 interface ProgramFormProps {
   initialData?: Program;
@@ -727,6 +742,7 @@ interface ProgramFormData {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/organisms/ProgramForm.tsx
 import React, { useState, memo } from 'react';
@@ -906,6 +922,7 @@ const styles = StyleSheet.create({
 **責務**: 削除確認ダイアログ
 
 **Props**
+
 ```typescript
 interface DeleteConfirmDialogProps {
   visible: boolean;
@@ -917,6 +934,7 @@ interface DeleteConfirmDialogProps {
 ```
 
 **実装例**
+
 ```typescript
 // src/components/organisms/DeleteConfirmDialog.tsx
 import React from 'react';
@@ -942,7 +960,7 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           <View style={styles.dialog}>
             <Text style={styles.title}>削除確認</Text>
             <Text style={styles.message}>このタスクを削除しますか？</Text>
-            
+
             <View style={styles.actions}>
               <Button
                 title="キャンセル"
@@ -974,7 +992,7 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           <Text style={styles.message}>
             この番組のタスクは{'\n'}繰り返し設定されています
           </Text>
-          
+
           <View style={styles.options}>
             <Button
               title="この回だけ削除"
@@ -989,7 +1007,7 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
               fullWidth
             />
           </View>
-          
+
           <Button
             title="キャンセル"
             variant="secondary"
@@ -1051,6 +1069,7 @@ const styles = StyleSheet.create({
 **責務**: タスク一覧画面
 
 **実装例**
+
 ```typescript
 // src/screens/TaskListScreen.tsx
 import React, { useEffect, useCallback } from 'react';
@@ -1130,7 +1149,7 @@ export const TaskListScreen: React.FC = () => {
         onRefresh={refetch}
         refreshing={loading}
       />
-      
+
       <View style={styles.footer}>
         <Button
           title="履歴を見る"
@@ -1176,20 +1195,20 @@ export const theme = {
     secondary: '#FFC107',
     danger: '#F44336',
     success: '#4CAF50',
-    
+
     // Background colors
     background: '#FFFFFF',
     cardBackground: '#F5F5F5',
-    
+
     // Text colors
     text: '#212121',
     textSecondary: '#757575',
     white: '#FFFFFF',
-    
+
     // Border colors
     border: '#E0E0E0',
   },
-  
+
   spacing: {
     xs: 4,
     sm: 8,
@@ -1198,7 +1217,7 @@ export const theme = {
     xl: 24,
     xxl: 32,
   },
-  
+
   typography: {
     h1: {
       fontSize: 20,
@@ -1218,13 +1237,13 @@ export const theme = {
       fontSize: 12,
     },
   },
-  
+
   borderRadius: {
     sm: 8,
     md: 12,
     lg: 16,
   },
-  
+
   shadows: {
     card: {
       shadowColor: '#000',
@@ -1292,9 +1311,9 @@ export const STATUS_CONFIG = {
 
 // 期限表示の色設定
 export const DEADLINE_COLORS = {
-  urgent: '#F44336',    // 残り1日以内
-  warning: '#FFC107',   // 残り2-3日
-  normal: '#757575',    // 残り4日以上
+  urgent: '#F44336', // 残り1日以内
+  warning: '#FFC107', // 残り2-3日
+  normal: '#757575', // 残り4日以上
 } as const;
 ```
 
@@ -1519,7 +1538,7 @@ export const useTasks = () => {
 
   const fetchTasks = useCallback(async () => {
     if (!db) return;
-    
+
     try {
       setLoading(true);
       const data = await TaskService.getActiveTasks(db);
@@ -1534,32 +1553,35 @@ export const useTasks = () => {
     }
   }, [db]);
 
-  const updateTaskStatus = useCallback(async (taskId: number, status: TaskStatus) => {
-    if (!db) return;
-    
-    try {
-      await TaskService.updateTaskStatus(db, taskId, status);
-      
-      // 完了した場合は次回タスクを生成
-      if (status === 'completed') {
-        const task = tasks.find(t => t.id === taskId);
-        if (task && task.repeat_type === 'weekly') {
-          // 前回タスクの放送日時から1週間後のタスクを生成
-          await TaskService.generateNextTask(db, task.program_id, task.broadcast_datetime);
+  const updateTaskStatus = useCallback(
+    async (taskId: number, status: TaskStatus) => {
+      if (!db) return;
+
+      try {
+        await TaskService.updateTaskStatus(db, taskId, status);
+
+        // 完了した場合は次回タスクを生成
+        if (status === 'completed') {
+          const task = tasks.find((t) => t.id === taskId);
+          if (task && task.repeat_type === 'weekly') {
+            // 前回タスクの放送日時から1週間後のタスクを生成
+            await TaskService.generateNextTask(db, task.program_id, task.broadcast_datetime);
+          }
         }
+
+        await fetchTasks();
+      } catch (err) {
+        const error = err as Error;
+        setError(error);
+        handleError(error);
       }
-      
-      await fetchTasks();
-    } catch (err) {
-      const error = err as Error;
-      setError(error);
-      handleError(error);
-    }
-  }, [db, tasks, fetchTasks]);
+    },
+    [db, tasks, fetchTasks]
+  );
 
   const cleanupExpiredTasks = useCallback(async () => {
     if (!db) return;
-    
+
     try {
       await TaskService.cleanupExpiredTasks(db);
       await fetchTasks();
@@ -1572,8 +1594,8 @@ export const useTasks = () => {
 
   // タスクを期限順にソート（useMemoでメモ化）
   const sortedTasks = useMemo(() => {
-    return [...tasks].sort((a, b) => 
-      new Date(a.deadline_datetime).getTime() - new Date(b.deadline_datetime).getTime()
+    return [...tasks].sort(
+      (a, b) => new Date(a.deadline_datetime).getTime() - new Date(b.deadline_datetime).getTime()
     );
   }, [tasks]);
 
@@ -1692,11 +1714,9 @@ export class TaskService {
     return result as TaskWithProgram[];
   }
 
-  static async getTaskById(
-    db: SQLite.SQLiteDatabase,
-    id: number
-  ): Promise<TaskWithProgram | null> {
-    const result = await db.getFirstAsync(`
+  static async getTaskById(db: SQLite.SQLiteDatabase, id: number): Promise<TaskWithProgram | null> {
+    const result = await db.getFirstAsync(
+      `
       SELECT 
         t.*,
         p.station_name,
@@ -1705,7 +1725,9 @@ export class TaskService {
       FROM tasks t
       INNER JOIN programs p ON t.program_id = p.id
       WHERE t.id = ?
-    `, [id]);
+    `,
+      [id]
+    );
     return result as TaskWithProgram | null;
   }
 
@@ -1715,23 +1737,29 @@ export class TaskService {
     status: TaskStatus
   ): Promise<void> {
     if (status === 'completed') {
-      await db.runAsync(`
+      await db.runAsync(
+        `
         UPDATE tasks 
         SET 
           status = ?,
           completed_at = datetime('now', 'localtime'),
           updated_at = datetime('now', 'localtime')
         WHERE id = ?
-      `, [status, id]);
+      `,
+        [status, id]
+      );
     } else {
-      await db.runAsync(`
+      await db.runAsync(
+        `
         UPDATE tasks 
         SET 
           status = ?,
           completed_at = NULL,
           updated_at = datetime('now', 'localtime')
         WHERE id = ?
-      `, [status, id]);
+      `,
+        [status, id]
+      );
     }
   }
 
@@ -1754,7 +1782,7 @@ export class TaskService {
       for (const task of expiredTasks as any[]) {
         // タスクを削除
         await db.runAsync('DELETE FROM tasks WHERE id = ?', [task.id]);
-        
+
         // 繰り返し設定がある場合は次回タスクを生成
         if (task.repeat_type === 'weekly') {
           // 前回タスクの放送日時から1週間後のタスクを生成
@@ -1770,10 +1798,9 @@ export class TaskService {
     previousBroadcastDatetime: string
   ): Promise<void> {
     // 番組情報を取得（時刻情報が必要）
-    const program = await db.getFirstAsync(
-      'SELECT * FROM programs WHERE id = ?',
-      [programId]
-    ) as any;
+    const program = (await db.getFirstAsync('SELECT * FROM programs WHERE id = ?', [
+      programId,
+    ])) as any;
 
     if (!program) return;
 
@@ -1788,14 +1815,17 @@ export class TaskService {
     const deadline = calculateDeadline(nextBroadcast, program.hour);
 
     // タスクを作成
-    await db.runAsync(`
+    await db.runAsync(
+      `
       INSERT INTO tasks (
         program_id,
         broadcast_datetime,
         deadline_datetime,
         status
       ) VALUES (?, ?, ?, 'unlistened')
-    `, [programId, nextBroadcast, deadline]);
+    `,
+      [programId, nextBroadcast, deadline]
+    );
   }
 
   static async getHistory(db: SQLite.SQLiteDatabase): Promise<TaskWithProgram[]> {
@@ -1837,7 +1867,8 @@ import { getNextBroadcastDatetime, calculateDeadline } from '../utils/dateUtils'
 
 export class ProgramService {
   static async createProgram(data: ProgramFormData): Promise<number> {
-    const result = await db.runAsync(`
+    const result = await db.runAsync(
+      `
       INSERT INTO programs (
         station_name,
         program_name,
@@ -1846,20 +1877,16 @@ export class ProgramService {
         minute,
         repeat_type
       ) VALUES (?, ?, ?, ?, ?, ?)
-    `, [
-      data.stationName,
-      data.programName,
-      data.dayOfWeek,
-      data.hour,
-      data.minute,
-      data.repeatType,
-    ]);
+    `,
+      [data.stationName, data.programName, data.dayOfWeek, data.hour, data.minute, data.repeatType]
+    );
 
     return result.lastInsertRowId;
   }
 
   static async updateProgram(id: number, data: ProgramFormData): Promise<void> {
-    await db.runAsync(`
+    await db.runAsync(
+      `
       UPDATE programs 
       SET 
         station_name = ?,
@@ -1870,15 +1897,17 @@ export class ProgramService {
         repeat_type = ?,
         updated_at = datetime('now', 'localtime')
       WHERE id = ?
-    `, [
-      data.stationName,
-      data.programName,
-      data.dayOfWeek,
-      data.hour,
-      data.minute,
-      data.repeatType,
-      id,
-    ]);
+    `,
+      [
+        data.stationName,
+        data.programName,
+        data.dayOfWeek,
+        data.hour,
+        data.minute,
+        data.repeatType,
+        id,
+      ]
+    );
   }
 
   static async deleteProgram(id: number): Promise<void> {
@@ -1887,17 +1916,11 @@ export class ProgramService {
   }
 
   static async getProgramById(id: number): Promise<Program | null> {
-    const result = await db.getFirstAsync(
-      'SELECT * FROM programs WHERE id = ?',
-      [id]
-    );
+    const result = await db.getFirstAsync('SELECT * FROM programs WHERE id = ?', [id]);
     return result as Program | null;
   }
 
-  static async generateFirstTask(
-    programId: number,
-    programData: ProgramFormData
-  ): Promise<void> {
+  static async generateFirstTask(programId: number, programData: ProgramFormData): Promise<void> {
     // 次回放送日時を計算
     let broadcast = getNextBroadcastDatetime(
       programData.dayOfWeek,
@@ -1916,14 +1939,17 @@ export class ProgramService {
     const deadline = calculateDeadline(broadcast);
 
     // タスクを作成
-    await db.runAsync(`
+    await db.runAsync(
+      `
       INSERT INTO tasks (
         program_id,
         broadcast_datetime,
         deadline_datetime,
         status
       ) VALUES (?, ?, ?, 'unlistened')
-    `, [programId, broadcast, deadline]);
+    `,
+      [programId, broadcast, deadline]
+    );
   }
 }
 ```
@@ -2103,14 +2129,17 @@ export default App;
 ### 8.1 ユニットテスト
 
 **対象**
+
 - Utils（dateUtils）
 - Services（TaskService, ProgramService）
 
 **ツール**
+
 - Jest
 - React Native Testing Library
 
 **例**
+
 ```typescript
 // src/utils/__tests__/dateUtils.test.ts
 import { calculateRemainingDays, getNextBroadcastDatetime } from '../dateUtils';
@@ -2136,10 +2165,12 @@ describe('dateUtils', () => {
 ### 8.2 コンポーネントテスト
 
 **対象**
+
 - Atoms
 - Molecules
 
 **例**
+
 ```typescript
 // src/components/atoms/__tests__/Button.test.tsx
 import React from 'react';
@@ -2174,9 +2205,8 @@ describe('Button', () => {
 ```typescript
 // useMemoでの最適化例
 const sortedTasks = useMemo(() => {
-  return tasks.sort((a, b) => 
-    new Date(a.deadline_datetime).getTime() - 
-    new Date(b.deadline_datetime).getTime()
+  return tasks.sort(
+    (a, b) => new Date(a.deadline_datetime).getTime() - new Date(b.deadline_datetime).getTime()
   );
 }, [tasks]);
 ```

@@ -186,10 +186,9 @@ export const initializeDatabase = async (db: SQLite.SQLiteDatabase): Promise<voi
 
       if (!result) {
         // 現在のバージョンが未登録の場合は挿入
-        await db.runAsync(
-          'INSERT INTO schema_version (version) VALUES (?);',
-          [CURRENT_SCHEMA_VERSION]
-        );
+        await db.runAsync('INSERT INTO schema_version (version) VALUES (?);', [
+          CURRENT_SCHEMA_VERSION,
+        ]);
       }
     });
 

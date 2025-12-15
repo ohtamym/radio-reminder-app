@@ -2,7 +2,10 @@ import { registerRootComponent } from 'expo';
 // react-native-screensを明示的にインポート（Androidでの型エラー対策）
 import 'react-native-screens';
 // グローバルエラーハンドラーを設定
-import { setupGlobalErrorHandler, setupPromiseRejectionHandler } from './src/utils/globalErrorHandler';
+import {
+  setupGlobalErrorHandler,
+  setupPromiseRejectionHandler,
+} from './src/utils/globalErrorHandler';
 
 // グローバルエラーハンドラーを設定（ErrorBoundaryではキャッチできないエラーもキャッチ）
 setupGlobalErrorHandler();

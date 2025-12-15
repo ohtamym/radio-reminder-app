@@ -89,9 +89,7 @@ describe('TaskService', () => {
 
       expect(result).toEqual(mockTasks);
       expect(mockDb.getAllAsync).toHaveBeenCalledTimes(1);
-      expect(mockDb.getAllAsync).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT')
-      );
+      expect(mockDb.getAllAsync).toHaveBeenCalledWith(expect.stringContaining('SELECT'));
     });
 
     it('タスクがない場合は空配列を返す', async () => {
@@ -218,10 +216,10 @@ describe('TaskService', () => {
       );
 
       expect(mockDb.runAsync).toHaveBeenCalledTimes(1);
-      expect(mockDb.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE tasks'),
-        ['completed', 1]
-      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(expect.stringContaining('UPDATE tasks'), [
+        'completed',
+        1,
+      ]);
     });
 
     it('タスクステータスをlisteningに更新できる', async () => {
@@ -234,10 +232,10 @@ describe('TaskService', () => {
       );
 
       expect(mockDb.runAsync).toHaveBeenCalledTimes(1);
-      expect(mockDb.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE tasks'),
-        ['listening', 1]
-      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(expect.stringContaining('UPDATE tasks'), [
+        'listening',
+        1,
+      ]);
     });
 
     it('データベースエラーが発生した場合、AppErrorをスローする', async () => {
@@ -415,9 +413,7 @@ describe('TaskService', () => {
       await TaskService.cleanupOldHistory(mockDb as unknown as SQLite.SQLiteDatabase);
 
       expect(mockDb.runAsync).toHaveBeenCalledTimes(1);
-      expect(mockDb.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining("DELETE FROM tasks")
-      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM tasks'));
     });
 
     it('データベースエラーが発生した場合、AppErrorをスローする', async () => {

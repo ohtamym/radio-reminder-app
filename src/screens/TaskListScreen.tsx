@@ -150,10 +150,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
    *
    * FlatListの各アイテムに一意のキーを提供
    */
-  const keyExtractor = useCallback(
-    (item: TaskWithProgram) => item.id.toString(),
-    []
-  );
+  const keyExtractor = useCallback((item: TaskWithProgram) => item.id.toString(), []);
 
   /**
    * renderItem（メモ化）
@@ -227,22 +224,14 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
 
             <ScrollView style={styles.modalScrollView}>
               {scheduledNotifications.length === 0 ? (
-                <Text style={styles.modalText}>
-                  スケジュール済み通知はありません
-                </Text>
+                <Text style={styles.modalText}>スケジュール済み通知はありません</Text>
               ) : (
                 scheduledNotifications.map((notification, index) => (
                   <View key={notification.identifier} style={styles.notificationItem}>
                     <Text style={styles.notificationIndex}>#{index + 1}</Text>
-                    <Text style={styles.notificationId}>
-                      ID: {notification.identifier}
-                    </Text>
-                    <Text style={styles.notificationTitle}>
-                      {notification.content.title}
-                    </Text>
-                    <Text style={styles.notificationBody}>
-                      {notification.content.body}
-                    </Text>
+                    <Text style={styles.notificationId}>ID: {notification.identifier}</Text>
+                    <Text style={styles.notificationTitle}>{notification.content.title}</Text>
+                    <Text style={styles.notificationBody}>{notification.content.body}</Text>
                     {notification.trigger ? (
                       <View>
                         <Text style={styles.notificationDate}>
@@ -260,21 +249,20 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
                           if (trigger.value !== undefined && trigger.value !== null) {
                             return (
                               <Text style={styles.notificationDate}>
-                                日時: {new Date(trigger.value).toLocaleString('ja-JP', {
+                                日時:{' '}
+                                {new Date(trigger.value).toLocaleString('ja-JP', {
                                   year: 'numeric',
                                   month: '2-digit',
                                   day: '2-digit',
                                   hour: '2-digit',
                                   minute: '2-digit',
-                                  second: '2-digit'
+                                  second: '2-digit',
                                 })}
                               </Text>
                             );
                           }
                           return (
-                            <Text style={styles.notificationDate}>
-                              日時情報が見つかりません
-                            </Text>
+                            <Text style={styles.notificationDate}>日時情報が見つかりません</Text>
                           );
                         })()}
                         {/* デバッグ: trigger構造を表示 */}
@@ -283,9 +271,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
                         </Text>
                       </View>
                     ) : (
-                      <Text style={styles.notificationDate}>
-                        Trigger情報なし
-                      </Text>
+                      <Text style={styles.notificationDate}>Trigger情報なし</Text>
                     )}
                   </View>
                 ))

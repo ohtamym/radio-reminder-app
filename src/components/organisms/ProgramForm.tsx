@@ -11,14 +11,14 @@
  * - エラー表示
  */
 
-import React, { useState, memo } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { Button, Input, Text } from "@/components/atoms";
-import { TimePickerField, RadioButtonGroup } from "@/components/molecules";
-import { Program, ProgramFormData, RepeatType } from "@/types";
-import { DAY_OF_WEEK_OPTIONS, REPEAT_TYPE_OPTIONS } from "@/constants";
-import { theme } from "@/theme";
+import React, { useState, memo } from 'react';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Button, Input, Text } from '@/components/atoms';
+import { TimePickerField, RadioButtonGroup } from '@/components/molecules';
+import { Program, ProgramFormData, RepeatType } from '@/types';
+import { DAY_OF_WEEK_OPTIONS, REPEAT_TYPE_OPTIONS } from '@/constants';
+import { theme } from '@/theme';
 
 // ============================================
 // 型定義
@@ -61,28 +61,18 @@ export interface ProgramFormProps {
  *   onCancel={() => navigation.goBack()}
  * />
  */
-const ProgramForm: React.FC<ProgramFormProps> = ({
-  initialData,
-  onSubmit,
-  onCancel,
-}) => {
+const ProgramForm: React.FC<ProgramFormProps> = ({ initialData, onSubmit, onCancel }) => {
   // ============================================
   // State管理
   // ============================================
 
-  const [stationName, setStationName] = useState(
-    initialData?.station_name || ""
-  );
-  const [programName, setProgramName] = useState(
-    initialData?.program_name || ""
-  );
+  const [stationName, setStationName] = useState(initialData?.station_name || '');
+  const [programName, setProgramName] = useState(initialData?.program_name || '');
   const [dayOfWeek, setDayOfWeek] = useState(initialData?.day_of_week || 0);
   const [hour, setHour] = useState(initialData?.hour || 18);
   const [minute, setMinute] = useState(initialData?.minute || 0);
-  const [repeatType, setRepeatType] = useState<RepeatType>(
-    initialData?.repeat_type || "weekly"
-  );
-  const [errors, setErrors] = useState<string>("");
+  const [repeatType, setRepeatType] = useState<RepeatType>(initialData?.repeat_type || 'weekly');
+  const [errors, setErrors] = useState<string>('');
 
   // ============================================
   // イベントハンドラ
@@ -96,12 +86,12 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
   const handleSubmit = () => {
     // バリデーション
     if (!stationName.trim() || !programName.trim()) {
-      setErrors("放送局名と番組名は必須です");
+      setErrors('放送局名と番組名は必須です');
       return;
     }
 
     // エラーをクリア
-    setErrors("");
+    setErrors('');
 
     // フォームデータを送信
     onSubmit({
@@ -147,11 +137,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
               style={styles.picker}
             >
               {DAY_OF_WEEK_OPTIONS.map((option) => (
-                <Picker.Item
-                  key={option.value}
-                  label={option.label}
-                  value={option.value}
-                />
+                <Picker.Item key={option.value} label={option.label} value={option.value} />
               ))}
             </Picker>
           </View>
@@ -186,7 +172,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         </View>
         <View style={styles.buttonWrapper}>
           <Button variant="primary" onPress={handleSubmit}>
-            {initialData ? "保存" : "登録"}
+            {initialData ? '保存' : '登録'}
           </Button>
         </View>
       </View>
@@ -211,14 +197,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: theme.typography.fontSize.body,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.colors.text,
     marginBottom: theme.spacing.sm,
   },
   pickerContainer: {
     backgroundColor: theme.colors.cardBackground,
     borderRadius: theme.borderRadius.small,
-    overflow: "hidden", // iOSでの角丸対応
+    overflow: 'hidden', // iOSでの角丸対応
   },
   picker: {
     color: theme.colors.text,
@@ -228,11 +214,11 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     fontSize: theme.typography.fontSize.caption,
     marginTop: theme.spacing.sm,
-    textAlign: "center",
+    textAlign: 'center',
   },
   footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: theme.spacing.lg,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
@@ -248,7 +234,7 @@ const styles = StyleSheet.create({
 // ============================================
 
 // displayNameを設定（デバッグ時に役立つ）
-ProgramForm.displayName = "ProgramForm";
+ProgramForm.displayName = 'ProgramForm';
 
 // memoでラップしてエクスポート
 export default memo(ProgramForm);

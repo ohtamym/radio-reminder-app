@@ -63,10 +63,7 @@ export class TaskService {
       return tasks;
     } catch (error) {
       console.error('[TaskService] Get active tasks failed:', error);
-      throw new AppError(
-        'アクティブタスクの取得に失敗しました',
-        'GET_ACTIVE_TASKS_FAILED'
-      );
+      throw new AppError('アクティブタスクの取得に失敗しました', 'GET_ACTIVE_TASKS_FAILED');
     }
   }
 
@@ -83,10 +80,7 @@ export class TaskService {
    *   console.log(task.program_name);
    * }
    */
-  static async getTaskById(
-    db: SQLite.SQLiteDatabase,
-    id: number
-  ): Promise<TaskWithProgram | null> {
+  static async getTaskById(db: SQLite.SQLiteDatabase, id: number): Promise<TaskWithProgram | null> {
     try {
       const task = await db.getFirstAsync<TaskWithProgram>(
         `SELECT
@@ -150,7 +144,10 @@ export class TaskService {
           await NotificationService.cancelNotification(id);
         } catch (notificationError) {
           // 通知処理のエラーはログのみ出力し、ステータス更新は成功とみなす
-          console.error(`[TaskService] Notification cancellation failed for task ${id}:`, notificationError);
+          console.error(
+            `[TaskService] Notification cancellation failed for task ${id}:`,
+            notificationError
+          );
         }
       } else {
         // それ以外は completed_at をクリア
@@ -168,10 +165,7 @@ export class TaskService {
       console.log('[TaskService] Task status updated:', id, status);
     } catch (error) {
       console.error('[TaskService] Update task status failed:', error);
-      throw new AppError(
-        'タスクステータスの更新に失敗しました',
-        'UPDATE_TASK_STATUS_FAILED'
-      );
+      throw new AppError('タスクステータスの更新に失敗しました', 'UPDATE_TASK_STATUS_FAILED');
     }
   }
 
@@ -205,7 +199,10 @@ export class TaskService {
         await NotificationService.cancelNotification(id);
       } catch (notificationError) {
         // 通知処理のエラーはログのみ出力し、タスク削除は成功とみなす
-        console.error(`[TaskService] Notification cancellation failed for task ${id}:`, notificationError);
+        console.error(
+          `[TaskService] Notification cancellation failed for task ${id}:`,
+          notificationError
+        );
       }
     } catch (error) {
       console.error('[TaskService] Delete task failed:', error);
@@ -334,7 +331,12 @@ export class TaskService {
           await NotificationService.cancelNotification(notifTask.oldTaskId);
 
           // 新しいタスクの通知をスケジュール
-          if (notifTask.newTaskId && notifTask.programName && notifTask.stationName && notifTask.deadline) {
+          if (
+            notifTask.newTaskId &&
+            notifTask.programName &&
+            notifTask.stationName &&
+            notifTask.deadline
+          ) {
             await NotificationService.scheduleReminder(
               notifTask.newTaskId,
               notifTask.programName,
@@ -344,7 +346,10 @@ export class TaskService {
           }
         } catch (notificationError) {
           // 通知処理のエラーはログのみ出力し、処理は継続
-          console.error(`[TaskService] Notification processing failed for task ${notifTask.oldTaskId}:`, notificationError);
+          console.error(
+            `[TaskService] Notification processing failed for task ${notifTask.oldTaskId}:`,
+            notificationError
+          );
         }
       }
 
@@ -435,15 +440,15 @@ export class TaskService {
           );
         } catch (notificationError) {
           // 通知処理のエラーはログのみ出力し、タスク生成は成功とみなす
-          console.error(`[TaskService] Notification scheduling failed for task ${result.lastInsertRowId}:`, notificationError);
+          console.error(
+            `[TaskService] Notification scheduling failed for task ${result.lastInsertRowId}:`,
+            notificationError
+          );
         }
       }
     } catch (error) {
       console.error('[TaskService] Generate next task failed:', error);
-      throw new AppError(
-        '次回タスクの生成に失敗しました',
-        'GENERATE_NEXT_TASK_FAILED'
-      );
+      throw new AppError('次回タスクの生成に失敗しました', 'GENERATE_NEXT_TASK_FAILED');
     }
   }
 
@@ -513,10 +518,7 @@ export class TaskService {
       console.log('[TaskService] Old history cleaned up successfully');
     } catch (error) {
       console.error('[TaskService] Cleanup old history failed:', error);
-      throw new AppError(
-        '古い履歴のクリーンアップに失敗しました',
-        'CLEANUP_OLD_HISTORY_FAILED'
-      );
+      throw new AppError('古い履歴のクリーンアップに失敗しました', 'CLEANUP_OLD_HISTORY_FAILED');
     }
   }
 }

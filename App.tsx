@@ -9,16 +9,16 @@
  * - NotificationService: 通知機能の初期化
  */
 
-import React, { useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // react-native-screensを明示的にインポート（Androidでの型エラー対策）
-import "react-native-screens";
+import 'react-native-screens';
 import { StatusBar } from 'expo-status-bar';
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DatabaseProvider } from "@/contexts/DatabaseContext";
-import { AppNavigator } from "@/navigation";
-import { NotificationService } from "@/services/NotificationService";
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DatabaseProvider } from '@/contexts/DatabaseContext';
+import { AppNavigator } from '@/navigation';
+import { NotificationService } from '@/services/NotificationService';
 
 /**
  * アプリケーションルートコンポーネント

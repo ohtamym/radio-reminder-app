@@ -59,10 +59,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task }) => {
       <View style={styles.divider} />
 
       {/* 放送日時・視聴期限 */}
-      <DeadlineInfo
-        broadcastDatetime={task.broadcast_datetime}
-        deadline={task.deadline_datetime}
-      />
+      <DeadlineInfo broadcastDatetime={task.broadcast_datetime} deadline={task.deadline_datetime} />
 
       {/* ステータス */}
       <View style={styles.section}>

@@ -64,9 +64,7 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ task }) => {
 
       {/* 聴取日時 */}
       {task.completed_at && (
-        <Text style={styles.datetime}>
-          聴取: {formatDate(task.completed_at, 'M/D(ddd) HH:mm')}
-        </Text>
+        <Text style={styles.datetime}>聴取: {formatDate(task.completed_at, 'M/D(ddd) HH:mm')}</Text>
       )}
     </View>
   );

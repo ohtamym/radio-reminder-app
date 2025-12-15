@@ -90,10 +90,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
    *
    * FlatListの各アイテムに一意のキーを提供
    */
-  const keyExtractor = useCallback(
-    (item: TaskWithProgram) => item.id.toString(),
-    []
-  );
+  const keyExtractor = useCallback((item: TaskWithProgram) => item.id.toString(), []);
 
   /**
    * renderItem（メモ化）
@@ -127,9 +124,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
             subMessage="タスクを完了すると、ここに履歴が表示されます"
           />
         }
-        contentContainerStyle={
-          history.length === 0 ? styles.emptyList : styles.list
-        }
+        contentContainerStyle={history.length === 0 ? styles.emptyList : styles.list}
         // パフォーマンス最適化
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}

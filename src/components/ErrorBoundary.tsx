@@ -5,11 +5,11 @@
  * フォールバックUIを表示するエラーバウンダリ
  */
 
-import React, { Component, ReactNode } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { theme } from "@/theme";
-import { getGlobalError, clearGlobalError } from "@/utils/globalErrorHandler";
-import { Button } from "@/components/atoms";
+import React, { Component, ReactNode } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { theme } from '@/theme';
+import { getGlobalError, clearGlobalError } from '@/utils/globalErrorHandler';
+import { Button } from '@/components/atoms';
 
 // ============================================
 // 型定義
@@ -82,7 +82,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({ errorInfo });
 
     // エラーログの出力
-    console.error("Error caught by boundary:", {
+    console.error('Error caught by boundary:', {
       error: {
         name: error.name,
         message: error.message,
@@ -96,12 +96,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // Android Logcatにも出力（デバッグ用）
     if (__DEV__) {
-      console.error("=== ERROR DETAILS ===");
-      console.error("Error Name:", error.name);
-      console.error("Error Message:", error.message);
-      console.error("Error Stack:", error.stack);
-      console.error("Component Stack:", errorInfo.componentStack);
-      console.error("====================");
+      console.error('=== ERROR DETAILS ===');
+      console.error('Error Name:', error.name);
+      console.error('Error Message:', error.message);
+      console.error('Error Stack:', error.stack);
+      console.error('Component Stack:', errorInfo.componentStack);
+      console.error('====================');
     }
 
     // 本番環境ではエラー追跡サービスに送信
@@ -139,15 +139,10 @@ export class ErrorBoundary extends Component<Props, State> {
       // デフォルトのエラーUI
       return (
         <View style={styles.container}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-          >
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
             <Text style={styles.emoji}>⚠️</Text>
             <Text style={styles.title}>エラーが発生しました</Text>
-            <Text style={styles.message}>
-              {this.state.error?.message || "不明なエラー"}
-            </Text>
+            <Text style={styles.message}>{this.state.error?.message || '不明なエラー'}</Text>
             {(() => {
               const { error: globalError } = getGlobalError();
               if (globalError && globalError !== this.state.error) {
@@ -168,7 +163,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 fullWidth
                 style={styles.buttonSpacing}
               >
-                {this.state.showDetails ? "詳細を隠す" : "詳細を表示"}
+                {this.state.showDetails ? '詳細を隠す' : '詳細を表示'}
               </Button>
             )}
 
@@ -180,73 +175,44 @@ export class ErrorBoundary extends Component<Props, State> {
                 <Text style={styles.detailsText}>{this.state.error.name}</Text>
 
                 <Text style={styles.detailsLabel}>エラーメッセージ:</Text>
-                <Text style={styles.detailsText}>
-                  {this.state.error.message}
-                </Text>
+                <Text style={styles.detailsText}>{this.state.error.message}</Text>
 
                 {this.state.error.stack && (
                   <>
                     <Text style={styles.detailsLabel}>スタックトレース:</Text>
-                    <ScrollView
-                      style={styles.stackScrollView}
-                      nestedScrollEnabled={true}
-                    >
-                      <Text style={styles.detailsText}>
-                        {this.state.error.stack}
-                      </Text>
+                    <ScrollView style={styles.stackScrollView} nestedScrollEnabled={true}>
+                      <Text style={styles.detailsText}>{this.state.error.stack}</Text>
                     </ScrollView>
                   </>
                 )}
 
                 {this.state.errorInfo?.componentStack && (
                   <>
-                    <Text style={styles.detailsLabel}>
-                      コンポーネントスタック:
-                    </Text>
-                    <ScrollView
-                      style={styles.stackScrollView}
-                      nestedScrollEnabled={true}
-                    >
-                      <Text style={styles.detailsText}>
-                        {this.state.errorInfo.componentStack}
-                      </Text>
+                    <Text style={styles.detailsLabel}>コンポーネントスタック:</Text>
+                    <ScrollView style={styles.stackScrollView} nestedScrollEnabled={true}>
+                      <Text style={styles.detailsText}>{this.state.errorInfo.componentStack}</Text>
                     </ScrollView>
                   </>
                 )}
 
                 {(() => {
-                  const { error: globalError, info: globalErrorInfo } =
-                    getGlobalError();
+                  const { error: globalError, info: globalErrorInfo } = getGlobalError();
                   if (globalError && globalError !== this.state.error) {
                     return (
                       <>
                         <Text style={styles.detailsLabel}>
                           グローバルエラー（ネイティブエラー）:
                         </Text>
-                        <Text style={styles.detailsText}>
-                          エラー名: {globalError.name}
-                        </Text>
-                        <Text style={styles.detailsText}>
-                          メッセージ: {globalError.message}
-                        </Text>
+                        <Text style={styles.detailsText}>エラー名: {globalError.name}</Text>
+                        <Text style={styles.detailsText}>メッセージ: {globalError.message}</Text>
                         {globalError.stack && (
-                          <ScrollView
-                            style={styles.stackScrollView}
-                            nestedScrollEnabled={true}
-                          >
-                            <Text style={styles.detailsText}>
-                              {globalError.stack}
-                            </Text>
+                          <ScrollView style={styles.stackScrollView} nestedScrollEnabled={true}>
+                            <Text style={styles.detailsText}>{globalError.stack}</Text>
                           </ScrollView>
                         )}
                         {globalErrorInfo && (
-                          <ScrollView
-                            style={styles.stackScrollView}
-                            nestedScrollEnabled={true}
-                          >
-                            <Text style={styles.detailsText}>
-                              {globalErrorInfo}
-                            </Text>
+                          <ScrollView style={styles.stackScrollView} nestedScrollEnabled={true}>
+                            <Text style={styles.detailsText}>{globalErrorInfo}</Text>
                           </ScrollView>
                         )}
                       </>
@@ -289,7 +255,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: theme.spacing.lg,
-    alignItems: "center",
+    alignItems: 'center',
   },
   emoji: {
     fontSize: 64,
@@ -305,14 +271,14 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.fontSize.body,
     color: theme.colors.textSecondary,
     marginBottom: theme.spacing.lg,
-    textAlign: "center",
+    textAlign: 'center',
     paddingHorizontal: theme.spacing.md,
   },
   buttonSpacing: {
     marginBottom: theme.spacing.md,
   },
   detailsContainer: {
-    width: "100%",
+    width: '100%',
     marginTop: theme.spacing.md,
     marginBottom: theme.spacing.md,
     padding: theme.spacing.md,
@@ -337,7 +303,7 @@ const styles = StyleSheet.create({
   detailsText: {
     fontSize: theme.typography.fontSize.small,
     color: theme.colors.text,
-    fontFamily: "monospace",
+    fontFamily: 'monospace',
     lineHeight: 18,
   },
   stackScrollView: {
@@ -349,10 +315,10 @@ const styles = StyleSheet.create({
   },
   globalErrorNote: {
     fontSize: theme.typography.fontSize.small,
-    color: theme.colors.error || "#ff0000",
+    color: theme.colors.error || '#ff0000',
     marginTop: theme.spacing.sm,
     marginBottom: theme.spacing.md,
-    textAlign: "center",
+    textAlign: 'center',
     paddingHorizontal: theme.spacing.md,
   },
 });

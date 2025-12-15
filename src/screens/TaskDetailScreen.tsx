@@ -47,10 +47,7 @@ type TaskDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'TaskDet
  * @example
  * <TaskDetailScreen navigation={navigation} route={{ params: { taskId: 1 } }} />
  */
-export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({ navigation, route }) => {
   // ============================================
   // State & Hooks
   // ============================================
@@ -269,21 +266,11 @@ export const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
 
         {/* 操作ボタン */}
         <View style={styles.actions}>
-          <Button
-            variant="secondary"
-            onPress={handleEdit}
-            fullWidth
-            disabled={updating}
-          >
+          <Button variant="secondary" onPress={handleEdit} fullWidth disabled={updating}>
             番組情報を編集
           </Button>
 
-          <Button
-            variant="danger"
-            onPress={handleDeletePress}
-            fullWidth
-            disabled={updating}
-          >
+          <Button variant="danger" onPress={handleDeletePress} fullWidth disabled={updating}>
             削除
           </Button>
         </View>
