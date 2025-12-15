@@ -23,6 +23,9 @@ import { NotificationService } from './NotificationService';
  * データベースインスタンスを引数として受け取る
  */
 export class TaskService {
+  // クリーンアップ処理の同時実行を防ぐためのフラグ
+  private static isCleanupRunning = false;
+
   // ============================================
   // READ（読取）
   // ============================================
@@ -232,6 +235,14 @@ export class TaskService {
    * await TaskService.cleanupExpiredTasks(db);
    */
   static async cleanupExpiredTasks(db: SQLite.SQLiteDatabase): Promise<void> {
+    // 既に実行中の場合はスキップ（トランザクションの多重実行を防ぐ）
+    if (this.isCleanupRunning) {
+      console.log('[TaskService] Cleanup already running, skipping...');
+      return;
+    }
+
+    this.isCleanupRunning = true;
+
     try {
       // まず期限切れタスクを取得
       const expiredTasks = await db.getAllAsync<{
@@ -344,6 +355,9 @@ export class TaskService {
         '期限切れタスクのクリーンアップに失敗しました',
         'CLEANUP_EXPIRED_TASKS_FAILED'
       );
+    } finally {
+      // 処理完了後、必ずフラグをリセット
+      this.isCleanupRunning = false;
     }
   }
 
