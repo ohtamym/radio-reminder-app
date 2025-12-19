@@ -275,16 +275,19 @@ describe('TaskService', () => {
   // ============================================
 
   describe('cleanupExpiredTasks', () => {
-    it('期限切れタスクがない場合、何もしない', async () => {
+    it('期限切れタスクがない場合、空配列を返す', async () => {
       mockDb.getAllAsync.mockResolvedValue([]);
 
-      await TaskService.cleanupExpiredTasks(mockDb as unknown as SQLite.SQLiteDatabase);
+      const result = await TaskService.cleanupExpiredTasks(
+        mockDb as unknown as SQLite.SQLiteDatabase
+      );
 
+      expect(result).toEqual([]);
       expect(mockDb.getAllAsync).toHaveBeenCalledTimes(1);
       expect(mockDb.withTransactionAsync).not.toHaveBeenCalled();
     });
 
-    it('期限切れタスク（繰り返しなし）を削除できる', async () => {
+    it('期限切れタスク（繰り返しなし）を削除し、クリーンアップ情報を返す', async () => {
       const expiredTasks = [
         {
           id: 1,
@@ -305,13 +308,22 @@ describe('TaskService', () => {
       });
       mockDb.runAsync.mockResolvedValue({ changes: 1, lastInsertRowId: undefined });
 
-      await TaskService.cleanupExpiredTasks(mockDb as unknown as SQLite.SQLiteDatabase);
+      const result = await TaskService.cleanupExpiredTasks(
+        mockDb as unknown as SQLite.SQLiteDatabase
+      );
 
+      expect(result).toEqual([
+        {
+          stationName: 'TBSラジオ',
+          programName: 'テスト番組',
+          broadcastDatetime: '2024-11-28 18:00:00',
+        },
+      ]);
       expect(mockDb.getAllAsync).toHaveBeenCalledTimes(1);
       expect(mockDb.withTransactionAsync).toHaveBeenCalledTimes(1);
     });
 
-    it('期限切れタスク（繰り返しあり）を削除し、次回タスクを生成できる', async () => {
+    it('期限切れタスク（繰り返しあり）を削除し、次回タスクを生成し、クリーンアップ情報を返す', async () => {
       const expiredTasks = [
         {
           id: 1,
@@ -334,8 +346,17 @@ describe('TaskService', () => {
         .mockResolvedValueOnce({ changes: 1, lastInsertRowId: undefined }) // DELETE
         .mockResolvedValueOnce({ changes: 1, lastInsertRowId: 2 }); // INSERT
 
-      await TaskService.cleanupExpiredTasks(mockDb as unknown as SQLite.SQLiteDatabase);
+      const result = await TaskService.cleanupExpiredTasks(
+        mockDb as unknown as SQLite.SQLiteDatabase
+      );
 
+      expect(result).toEqual([
+        {
+          stationName: 'TBSラジオ',
+          programName: 'テスト番組',
+          broadcastDatetime: '2024-12-05 18:00:00',
+        },
+      ]);
       expect(mockDb.withTransactionAsync).toHaveBeenCalledTimes(1);
       expect(mockDb.runAsync).toHaveBeenCalledWith('DELETE FROM tasks WHERE id = ?', [1]);
       expect(mockDb.runAsync).toHaveBeenCalledWith(

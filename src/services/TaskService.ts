@@ -13,6 +13,22 @@ import { AppError } from '@/utils/errorHandler';
 import { NotificationService } from './NotificationService';
 
 // ============================================
+// 型定義
+// ============================================
+
+/**
+ * クリーンアップされたタスクの情報
+ */
+export interface CleanedUpTask {
+  /** 放送局名 */
+  stationName: string;
+  /** 番組名 */
+  programName: string;
+  /** 放送日時 */
+  broadcastDatetime: string;
+}
+
+// ============================================
 // TaskService クラス
 // ============================================
 
@@ -224,18 +240,22 @@ export class TaskService {
    * アプリ起動時に呼び出すことを想定
    *
    * @param db - SQLiteDatabaseインスタンス
+   * @returns クリーンアップしたタスクの配列（放送局名、番組名、放送日時を含む）
    *
    * @throws AppError - データベースエラー
    *
    * @example
    * // アプリ起動時
-   * await TaskService.cleanupExpiredTasks(db);
+   * const cleanedUpTasks = await TaskService.cleanupExpiredTasks(db);
+   * if (cleanedUpTasks.length > 0) {
+   *   console.log('クリーンアップしたタスク:', cleanedUpTasks);
+   * }
    */
-  static async cleanupExpiredTasks(db: SQLite.SQLiteDatabase): Promise<void> {
+  static async cleanupExpiredTasks(db: SQLite.SQLiteDatabase): Promise<CleanedUpTask[]> {
     // 既に実行中の場合はスキップ（トランザクションの多重実行を防ぐ）
     if (this.isCleanupRunning) {
       console.log('[TaskService] Cleanup already running, skipping...');
-      return;
+      return [];
     }
 
     this.isCleanupRunning = true;
@@ -262,10 +282,17 @@ export class TaskService {
 
       if (expiredTasks.length === 0) {
         console.log('[TaskService] No expired tasks to cleanup');
-        return;
+        return [];
       }
 
       console.log(`[TaskService] Found ${expiredTasks.length} expired tasks`);
+
+      // クリーンアップしたタスクの情報を保存
+      const cleanedUpTasks: CleanedUpTask[] = expiredTasks.map((task) => ({
+        stationName: task.station_name,
+        programName: task.program_name,
+        broadcastDatetime: task.broadcast_datetime,
+      }));
 
       // 通知処理用の情報を保存
       type NotificationTask = {
@@ -354,6 +381,7 @@ export class TaskService {
       }
 
       console.log('[TaskService] Expired tasks processed successfully');
+      return cleanedUpTasks;
     } catch (error) {
       console.error('[TaskService] Cleanup expired tasks failed:', error);
       throw new AppError(

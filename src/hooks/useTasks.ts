@@ -11,10 +11,12 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Alert } from 'react-native';
 import { TaskWithProgram, TaskStatus } from '@/types';
-import { TaskService } from '@/services/TaskService';
+import { TaskService, CleanedUpTask } from '@/services/TaskService';
 import { useDatabase } from '@/contexts/DatabaseContext';
 import { handleError } from '@/utils/errorHandler';
+import { formatBroadcastDatetime } from '@/utils/dateUtils';
 
 // ============================================
 // 型定義
@@ -35,6 +37,33 @@ export interface UseTasksReturn {
   /** タスク一覧を再取得 */
   refresh: () => Promise<void>;
 }
+
+// ============================================
+// ヘルパー関数
+// ============================================
+
+/**
+ * クリーンアップ通知を表示
+ *
+ * 期限切れタスクをクリーンアップしたときに、
+ * クリーンアップしたタスクの情報を通知する
+ *
+ * @param cleanedUpTasks - クリーンアップしたタスクの配列
+ */
+const showCleanupNotification = (cleanedUpTasks: CleanedUpTask[]): void => {
+  // 通知メッセージを作成
+  const message = cleanedUpTasks
+    .map((task) => {
+      const formattedDate = formatBroadcastDatetime(task.broadcastDatetime, 'YYYY/MM/DD(ddd) HH:mm');
+      return `${task.stationName}\n${task.programName}\n${formattedDate}`;
+    })
+    .join('\n\n');
+
+  const title = `期限切れタスク ${cleanedUpTasks.length}件をクリーンアップしました`;
+
+  // 通知を表示
+  Alert.alert(title, message, [{ text: 'OK' }]);
+};
 
 // ============================================
 // カスタムフック
@@ -68,6 +97,7 @@ export const useTasks = (): UseTasksReturn => {
    *
    * 1. 期限切れタスクのクリーンアップ
    * 2. アクティブタスクを取得
+   * 3. クリーンアップしたタスクがある場合、通知を表示
    */
   const loadTasks = useCallback(async () => {
     if (!db || !isReady) {
@@ -77,11 +107,16 @@ export const useTasks = (): UseTasksReturn => {
     try {
       // 期限切れタスクをクリーンアップ
       // （繰り返し設定がある場合は次回タスクも自動生成される）
-      await TaskService.cleanupExpiredTasks(db);
+      const cleanedUpTasks = await TaskService.cleanupExpiredTasks(db);
 
       // アクティブタスクを取得
       const activeTasks = await TaskService.getActiveTasks(db);
       setTasks(activeTasks);
+
+      // クリーンアップしたタスクがある場合、通知を表示
+      if (cleanedUpTasks.length > 0) {
+        showCleanupNotification(cleanedUpTasks);
+      }
     } catch (error) {
       console.error('[useTasks] Failed to load tasks:', error);
       handleError(error);
