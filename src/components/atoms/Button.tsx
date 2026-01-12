@@ -15,6 +15,7 @@ import {
   ViewStyle,
   TextStyle,
   TouchableOpacityProps,
+  ActivityIndicator,
 } from 'react-native';
 import { colors } from '@/theme/colors';
 import { typography } from '@/theme/typography';
@@ -39,6 +40,8 @@ export interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   children: string;
   /** ボタンの無効化 */
   disabled?: boolean;
+  /** ローディング状態 */
+  loading?: boolean;
   /** 全幅表示 */
   fullWidth?: boolean;
   /** カスタムスタイル */
@@ -85,6 +88,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   children,
   disabled = false,
+  loading = false,
   fullWidth = false,
   style,
   ...rest
@@ -92,22 +96,32 @@ const Button: React.FC<ButtonProps> = ({
   // バリアントに応じたスタイルを取得
   const variantStyle = getVariantStyle(variant);
 
+  // ローディング中は無効化
+  const isDisabled = disabled || loading;
+
+  // インジケーターの色を決定（テキスト色と同じ）
+  const indicatorColor = variantStyle.text.color;
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
         variantStyle.button,
         fullWidth && styles.fullWidth,
-        disabled && styles.disabled,
+        isDisabled && styles.disabled,
         style,
       ]}
-      disabled={disabled}
+      disabled={isDisabled}
       activeOpacity={buttons.pressedOpacity}
       accessibilityRole="button"
-      accessibilityState={{ disabled }}
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       {...rest}
     >
-      <Text style={[styles.text, variantStyle.text]}>{children}</Text>
+      {loading ? (
+        <ActivityIndicator color={indicatorColor} size="small" />
+      ) : (
+        <Text style={[styles.text, variantStyle.text]}>{children}</Text>
+      )}
     </TouchableOpacity>
   );
 };

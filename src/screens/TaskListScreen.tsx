@@ -55,7 +55,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
   // State & Hooks
   // ============================================
 
-  const { tasks, loading, refreshing, updateStatus, refresh } = useTasks();
+  const { tasks, loading, refreshing, updatingTaskIds, updateStatus, refresh } = useTasks();
 
   // デバッグ用: スケジュール済み通知の表示（コメントアウト）
   // const [showDebugModal, setShowDebugModal] = useState(false);
@@ -164,9 +164,10 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({ navigation }) =>
         task={item}
         onPress={() => handleTaskPress(item.id)}
         onStatusChange={(status) => handleStatusChange(item.id, status)}
+        isUpdating={updatingTaskIds.has(item.id)}
       />
     ),
-    [handleTaskPress, handleStatusChange]
+    [handleTaskPress, handleStatusChange, updatingTaskIds]
   );
 
   // ============================================

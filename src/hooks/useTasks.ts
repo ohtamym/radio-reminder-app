@@ -32,6 +32,8 @@ export interface UseTasksReturn {
   loading: boolean;
   /** リフレッシュ中かどうか */
   refreshing: boolean;
+  /** 更新処理中のタスクIDのセット */
+  updatingTaskIds: Set<number>;
   /** タスクのステータスを更新 */
   updateStatus: (id: number, status: TaskStatus) => Promise<void>;
   /** タスク一覧を再取得 */
@@ -91,6 +93,7 @@ export const useTasks = (): UseTasksReturn => {
   const [tasks, setTasks] = useState<TaskWithProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [updatingTaskIds, setUpdatingTaskIds] = useState<Set<number>>(new Set());
 
   /**
    * タスク一覧を取得
@@ -150,29 +153,40 @@ export const useTasks = (): UseTasksReturn => {
   }, [loadTasks]);
 
   /**
-   * タスクのステータスを更新
+   * タスクのステータスを更新（楽観的UI更新）
    *
-   * 1. ステータスを更新
-   * 2. completedに変更した場合、繰り返し設定があれば次回タスクを生成
-   * 3. タスク一覧を再取得
+   * 1. 二重実行を防止
+   * 2. 楽観的にUIを更新（即座にステータス反映）
+   * 3. バックグラウンドでDB操作を実行
+   * 4. completedに変更した場合、繰り返し設定があれば次回タスクを生成
+   * 5. 最新データで再取得
+   * 6. エラー時は元の状態にロールバック
    *
    * @param id - タスクID
    * @param status - 新しいステータス
    */
   const updateStatus = useCallback(
     async (id: number, status: TaskStatus) => {
-      if (!db) {
+      // 二重実行防止チェック
+      if (updatingTaskIds.has(id) || !db) {
         return;
       }
 
+      // 楽観的UI更新: 即座にUIを更新してユーザーに反応を見せる
+      const previousTasks = [...tasks];
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
+
+      // ローディング状態を追加
+      setUpdatingTaskIds((prev) => new Set(prev).add(id));
+
       try {
-        // ステータスを更新
+        // バックグラウンドでDB操作を実行
         await TaskService.updateTaskStatus(db, id, status);
 
         // completedに変更した場合、繰り返し設定を確認して次回タスクを生成
         if (status === 'completed') {
-          // 更新したタスクの情報を取得
-          const task = tasks.find((t) => t.id === id);
+          // 更新したタスクの情報を取得（previousTasksから取得）
+          const task = previousTasks.find((t) => t.id === id);
 
           if (task && task.repeat_type === 'weekly') {
             // 繰り返し設定がある場合は次回タスクを生成（前回放送日時から1週間後）
@@ -180,14 +194,23 @@ export const useTasks = (): UseTasksReturn => {
           }
         }
 
-        // タスク一覧を再取得
+        // 最新データで再取得（次回タスクが生成された場合などに備えて）
         await loadTasks();
       } catch (error) {
+        // エラー時は楽観的更新をロールバック
         console.error('[useTasks] Failed to update status:', error);
+        setTasks(previousTasks);
         handleError(error);
+      } finally {
+        // ローディング状態を解除
+        setUpdatingTaskIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
       }
     },
-    [db, tasks, loadTasks]
+    [db, tasks, updatingTaskIds, loadTasks]
   );
 
   /**
@@ -206,6 +229,7 @@ export const useTasks = (): UseTasksReturn => {
     tasks: sortedTasks,
     loading,
     refreshing,
+    updatingTaskIds,
     updateStatus,
     refresh,
   };

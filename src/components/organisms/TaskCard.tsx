@@ -36,6 +36,8 @@ export interface TaskCardProps {
   onPress: () => void;
   /** ステータス変更時のコールバック */
   onStatusChange: (status: TaskStatus) => void;
+  /** 更新処理中かどうか */
+  isUpdating?: boolean;
 }
 
 // ============================================
@@ -45,7 +47,7 @@ export interface TaskCardProps {
 /**
  * propsの比較関数
  *
- * タスクID、ステータス、期限、番組名、放送局名が変更された場合のみ再レンダリング
+ * タスクID、ステータス、期限、番組名、放送局名、更新状態が変更された場合のみ再レンダリング
  * これにより、不要な再レンダリングを防ぎつつ、番組情報の変更も正しく反映
  *
  * @param prevProps - 前のprops
@@ -58,7 +60,8 @@ const arePropsEqual = (prevProps: TaskCardProps, nextProps: TaskCardProps): bool
     prevProps.task.status === nextProps.task.status &&
     prevProps.task.deadline_datetime === nextProps.task.deadline_datetime &&
     prevProps.task.program_name === nextProps.task.program_name &&
-    prevProps.task.station_name === nextProps.task.station_name
+    prevProps.task.station_name === nextProps.task.station_name &&
+    prevProps.isUpdating === nextProps.isUpdating
   );
 };
 
@@ -79,7 +82,7 @@ const arePropsEqual = (prevProps: TaskCardProps, nextProps: TaskCardProps): bool
  *   onStatusChange={(status) => handleStatusChange(task.id, status)}
  * />
  */
-const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange, isUpdating = false }) => {
   // 残り日数と色を計算
   const remainingDays = calculateRemainingDays(task.deadline_datetime);
   const deadlineColor = getRemainingDaysColor(remainingDays);
@@ -126,20 +129,40 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onPress, onStatusChange }) =>
       <View style={[styles.actions, { opacity: contentOpacity }]}>
         {task.status === 'unlistened' && (
           <>
-            <Button variant="secondary" onPress={() => onStatusChange('listening')}>
+            <Button
+              variant="secondary"
+              onPress={() => onStatusChange('listening')}
+              disabled={isUpdating}
+              loading={isUpdating}
+            >
               聴取中へ
             </Button>
-            <Button variant="primary" onPress={() => onStatusChange('completed')}>
+            <Button
+              variant="primary"
+              onPress={() => onStatusChange('completed')}
+              disabled={isUpdating}
+              loading={isUpdating}
+            >
               完了
             </Button>
           </>
         )}
         {task.status === 'listening' && (
           <>
-            <Button variant="secondary" onPress={() => onStatusChange('unlistened')}>
+            <Button
+              variant="secondary"
+              onPress={() => onStatusChange('unlistened')}
+              disabled={isUpdating}
+              loading={isUpdating}
+            >
               未聴取へ
             </Button>
-            <Button variant="primary" onPress={() => onStatusChange('completed')}>
+            <Button
+              variant="primary"
+              onPress={() => onStatusChange('completed')}
+              disabled={isUpdating}
+              loading={isUpdating}
+            >
               完了
             </Button>
           </>
